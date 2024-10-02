@@ -236,4 +236,74 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   }
 });
 
-export { registerAdmin, loginAdmin, logoutAdmin, refreshAccessToken };
+const changeCurrentPassword = asyncHandler(async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+
+  const admin = await Admin.findById(req.admin?._id);
+  const isPasswordCorrect = await admin.isPasswordCorrect(oldPassword);
+
+  if (!isPasswordCorrect) {
+    throw new ApiError(400, "Invalid old password");
+  }
+
+  admin.password = newPassword;
+  await admin.save({ validateBeforeSave: false });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Password changed successfullly"));
+});
+
+const getCurrentAdmin = asyncHandler(async (req, res) => {
+  return res
+    .status(200)
+    .json(new ApiResponse(200, req.admin, "Current user fetched successfully"));
+});
+
+const updateAccountDetails = asyncHandler((req, res) => {
+  const {
+    username,
+    email,
+    name,
+    menu,
+    submenu,
+    donations,
+    isSuperAdmin,
+    status,
+  } = req.body;
+
+  if (
+    !username ||
+    !email ||
+    !name ||
+    !menu ||
+    !submenu ||
+    !donations ||
+    !isSuperAdmin ||
+    !status
+  ) {
+    throw new ApiError(400, "All fields are empty");
+  }
+
+  const admin = Admin.findByIdAndUpdate(
+    req.admin?._id,
+    {
+      $set: req.body,
+    },
+    { new: true }
+  ).select("-password");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "Account details updated successfully"));
+});
+
+export {
+  registerAdmin,
+  loginAdmin,
+  logoutAdmin,
+  refreshAccessToken,
+  changeCurrentPassword,
+  getCurrentAdmin,
+  updateAccountDetails,
+};
