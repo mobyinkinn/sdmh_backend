@@ -18,8 +18,10 @@ app.use(cookieParser());
 
 //routes import
 import adminRouter from "./routes/admin.routes.js";
+import departmentRouter from "./routes/department.route.js";
 
 //routes declaration
 app.use("/api/v1/admin", adminRouter);
+app.use("/api/v1/department", departmentRouter);
 
 export default app;
