@@ -76,4 +76,52 @@ const createDepartment = asyncHandler(async (req, res) => {
     );
 });
 
-export { createDepartment };
+const updateDepartment = asyncHandler(async (req, res) => {
+  const { name, content, status } = req.body;
+
+  if (!name && !content && !(status === true || status === false)) {
+    throw new ApiError(400, "All fields are empty");
+  }
+
+  const updatedDepartment = await Department.findByIdAndUpdate(
+    req.query.id,
+    {
+      $set: req.body,
+    },
+    { new: true }
+  );
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, updatedDepartment, "Department updated successfully")
+    );
+});
+
+const getDepartments = asyncHandler(async (req, res) => {
+  const allDepartments = await Department.find({});
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, allDepartments, "Departments sent successfully")
+    );
+});
+
+const deleteDepartment = asyncHandler(async (req, res) => {
+  const { id } = req.query;
+
+  const department = await Department.findById(id);
+
+  if (!department) {
+    throw new ApiError(400, "No such department exists");
+  }
+
+  await Department.deleteOne({ _id: id });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Department deleted successfully"));
+});
+
+export { createDepartment, getDepartments, updateDepartment, deleteDepartment };

@@ -2,7 +2,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { Admin } from "../models/admin.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import jwt, { decode } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 
 const generateAccessAndRefreshTokens = async (adminId) => {
   try {
@@ -68,11 +68,11 @@ const registerAdmin = asyncHandler(async (req, res) => {
     throw new ApiError(400, "All fields are compulsory");
   }
 
-  if (!isSuperAdmin) {
+  if (!(isSuperAdmin === true || isSuperAdmin === false)) {
     throw new ApiError(400, "Admin type is required");
   }
 
-  if (!status) {
+  if (!(status === true || status === false)) {
     throw new ApiError(400, "Admin status is required");
   }
 
@@ -260,7 +260,7 @@ const getCurrentAdmin = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, req.admin, "Current user fetched successfully"));
 });
 
-const updateAccountDetails = asyncHandler((req, res) => {
+const updateAccountDetails = asyncHandler(async (req, res) => {
   const {
     username,
     email,
@@ -273,19 +273,19 @@ const updateAccountDetails = asyncHandler((req, res) => {
   } = req.body;
 
   if (
-    !username ||
-    !email ||
-    !name ||
-    !menu ||
-    !submenu ||
-    !donations ||
-    !isSuperAdmin ||
-    !status
+    !username &&
+    !email &&
+    !name &&
+    !menu &&
+    !submenu &&
+    !donations &&
+    !(isSuperAdmin === true || isSuperAdmin === false) &&
+    !(status === true || status === false)
   ) {
     throw new ApiError(400, "All fields are empty");
   }
 
-  const admin = Admin.findByIdAndUpdate(
+  const admin = await Admin.findByIdAndUpdate(
     req.admin?._id,
     {
       $set: req.body,
@@ -295,7 +295,28 @@ const updateAccountDetails = asyncHandler((req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, user, "Account details updated successfully"));
+    .json(new ApiResponse(200, admin, "Account details updated successfully"));
+});
+
+const deleteAccount = asyncHandler(async (req, res) => {
+  const { id } = req.query;
+
+  const deleteAdmin = await Admin.findById(id);
+
+  if (!deleteAdmin) {
+    throw new ApiError(400, "No such admin exists");
+  }
+
+  const superAdmin = req.admin;
+  if (!superAdmin.isSuperAdmin) {
+    throw new ApiError(400, "Only a super admin can remove other users");
+  }
+
+  await Admin.deleteOne({ _id: id });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Admin removed successfully."));
 });
 
 export {
@@ -306,4 +327,5 @@ export {
   changeCurrentPassword,
   getCurrentAdmin,
   updateAccountDetails,
+  deleteAccount,
 };
