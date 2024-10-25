@@ -29,7 +29,7 @@ const createDepartment = asyncHandler(async (req, res) => {
 
   const { name, content, status } = req.body;
 
-  if (!name || !content || !status) {
+  if (!name || !content || !(status === true || status === false)) {
     throw new ApiError(400, "Please fill the required fileds");
   }
 
