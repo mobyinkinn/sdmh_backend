@@ -29,8 +29,8 @@ const createDepartment = asyncHandler(async (req, res) => {
 
   const { name, content, status } = req.body;
 
-  if (!name || !content || !(status === true || status === false)) {
-    throw new ApiError(400, "Please fill the required fileds");
+  if (!name || !content || !status) {
+    throw new ApiError(400, "Please fill the required fields");
   }
 
   const existingDepartment = await Department.findOne({ name });

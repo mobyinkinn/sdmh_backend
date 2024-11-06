@@ -12,6 +12,7 @@ app.use(
 );
 
 app.use(e.json({ limit: "16kb" }));
+// app.use(e.json());
 app.use(e.urlencoded({ extended: true, limit: "16kb" }));
 app.use(e.static("public"));
 app.use(cookieParser());
