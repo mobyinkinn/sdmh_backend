@@ -2,7 +2,8 @@ import { Router } from "express";
 import {
   createDepartment,
   deleteDepartment,
-  getDepartments,
+  getAllDepartments,
+  getDepartment,
   updateDepartment,
 } from "../controllers/department.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
@@ -25,7 +26,8 @@ router.route("/create").post(
   createDepartment
 );
 
-router.route("/get-all").get(getDepartments);
+router.route("/get-all").get(getAllDepartments);
+router.route("/get").post(getDepartment);
 router.route("/update").post(verifyJwt, updateDepartment);
 router.route("/delete").get(verifyJwt, deleteDepartment);
 

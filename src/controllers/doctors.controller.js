@@ -141,4 +141,25 @@ const getAllDoctors = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, allDoctors, "Doctors sent successfully!!!"));
 });
 
-export { createDoctor, updateDoctor, deleteDoctor, getAllDoctors };
+const getDoctor = asyncHandler(async (req, res) => {
+  const { id, name, department } = req.body;
+
+  if (!id && !name && !department) {
+    throw new ApiError(400, "All fields are empty");
+  }
+
+  const filter = {};
+  if (id) filter._id = id;
+  if (name) filter.name = name;
+  if (department) filter.department = department;
+
+  const doctors = await Doctor.find(filter);
+
+  if (doctors.length === 0) {
+    throw new ApiError(400, "No doctor found!!!");
+  }
+
+  return res.status(200).json(new ApiResponse(200, "Doctor found", doctors));
+});
+
+export { createDoctor, updateDoctor, deleteDoctor, getAllDoctors, getDoctor };

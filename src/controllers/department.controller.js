@@ -98,7 +98,7 @@ const updateDepartment = asyncHandler(async (req, res) => {
     );
 });
 
-const getDepartments = asyncHandler(async (req, res) => {
+const getAllDepartments = asyncHandler(async (req, res) => {
   const allDepartments = await Department.find({});
 
   return res
@@ -106,6 +106,28 @@ const getDepartments = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(200, allDepartments, "Departments sent successfully")
     );
+});
+
+const getDepartment = asyncHandler(async (req, res) => {
+  const { id, name } = req.body;
+
+  if (!id && !name) {
+    throw new ApiError(400, "All fields are empty");
+  }
+
+  const filter = {};
+  if (id) filter._id = id;
+  if (name) filter.name = name;
+
+  const departments = await Department.find(filter);
+
+  if (departments.length === 0) {
+    throw new ApiError(400, "No department found!!!");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Department found", departments));
 });
 
 const deleteDepartment = asyncHandler(async (req, res) => {
@@ -124,4 +146,10 @@ const deleteDepartment = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "Department deleted successfully"));
 });
 
-export { createDepartment, getDepartments, updateDepartment, deleteDepartment };
+export {
+  createDepartment,
+  getAllDepartments,
+  updateDepartment,
+  getDepartment,
+  deleteDepartment,
+};
