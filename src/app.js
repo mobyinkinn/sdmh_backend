@@ -22,11 +22,13 @@ import adminRouter from "./routes/admin.routes.js";
 import departmentRouter from "./routes/department.route.js";
 import doctorRouter from "./routes/doctor.route.js";
 import academicsRouter from "./routes/academics.route.js";
+import tpaRouter from "./routes/tpa.route.js";
 
 //routes declaration
 app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/department", departmentRouter);
 app.use("/api/v1/doctor", doctorRouter);
 app.use("/api/v1/academics", academicsRouter);
+app.use("/api/v1/tpa", tpaRouter);
 
 export default app;

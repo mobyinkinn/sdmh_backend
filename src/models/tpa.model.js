@@ -1,25 +1,16 @@
 import mongoose, { Schema } from "mongoose";
 
-const departmentSchema = new Schema(
+const tpaSchema = new Schema(
   {
     name: {
       type: String,
       required: true,
       trim: true,
     },
-    image: {
+    logo: {
       type: String,
       required: true,
       trim: true,
-    },
-    bannerImage: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    content: {
-      type: String,
-      required: false,
     },
     status: {
       type: Boolean,
@@ -29,4 +20,4 @@ const departmentSchema = new Schema(
   { timestamps: true }
 );
 
-export const Department = mongoose.model("Department", departmentSchema);
+export const Tpa = mongoose.model("Tpa", tpaSchema);

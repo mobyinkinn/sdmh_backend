@@ -53,4 +53,91 @@ const createAcademics = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, createdAcademics, "Academics created!!!"));
 });
 
-export { createAcademics };
+const getAllAcademics = asyncHandler(async (req, res) => {
+  const allAcademics = await Academics.find({});
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, allAcademics, "Academics sent!!!"));
+});
+
+const updateAcademics = asyncHandler(async (req, res) => {
+  const { name, content, status } = req.body;
+
+  if (!req.query.id) {
+    throw new ApiError(400, "Please enter the id of the academics!!!");
+  }
+
+  const searchAcademic = await Academics.findById(req.query.id);
+
+  if (!searchAcademic) {
+    throw new ApiError(
+      400,
+      "No such academic found, please check the id again and enter!!!"
+    );
+  }
+
+  if (!name && !content && !status) {
+    throw new ApiError(400, "All fields are empty!!!");
+  }
+
+  const updatedAcademics = await Academics.findByIdAndUpdate(
+    req.query.id,
+    {
+      $set: req.body,
+    },
+    { new: true }
+  );
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, updatedAcademics, "Academics updated successfully")
+    );
+});
+
+const deleteAcademics = asyncHandler(async (req, res) => {
+  const deletedAcademics = await Academics.findByIdAndDelete(req.query.id);
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, "Academic deleted successfully!!!"));
+});
+
+const getAcademics = asyncHandler(async (req, res) => {
+  const { name } = req.body;
+
+  if (!name) {
+    throw new ApiError(400, "Enter the academics name");
+  }
+
+  const academics = await Academics.find(req.body);
+
+  if (!academics) {
+    throw new ApiError(400, "Academic not found!!!");
+  }
+
+  res.status(200).json(new ApiResponse(200, "Academics data sent", academics));
+});
+
+const getById = asyncHandler(async (req, res) => {
+  if (!req.query.id) {
+    throw new ApiError(400, "Please provide the required id!!!");
+  }
+  const academics = await Academics.findById(req.query.id);
+
+  if (!academics) {
+    throw new ApiError(400, "No academic found!!!");
+  }
+
+  res.status(200).json(new ApiResponse(200, "Academic found", academics));
+});
+
+export {
+  createAcademics,
+  getAllAcademics,
+  getById,
+  updateAcademics,
+  deleteAcademics,
+  getAcademics,
+};
