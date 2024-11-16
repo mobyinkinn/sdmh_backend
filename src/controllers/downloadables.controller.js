@@ -86,9 +86,29 @@ const updateDownloadables = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(
-      new ApiResponse(200, updatedDownloadable, "Downloadables updated!!!")
-    );
+    .json(new ApiResponse(200, updatedDownloadable, "Downloadable updated!!!"));
 });
 
-export { createDownloadable, getAllDownloadables, updateDownloadables };
+const deleteDownloadables = asyncHandler(async (req, res) => {
+  const isDownloadable = await Downloadables.findById(req.query.id);
+  if (!isDownloadable) {
+    throw new ApiError(400, "No such downloadable exists!!!");
+  }
+
+  const deleteDownloadable = await Downloadables.findByIdAndDelete(
+    req.query.id
+  );
+
+  if (!deleteDownloadable) {
+    throw new ApiError(500, "Something went wrong while delete!!!");
+  }
+
+  return res.status(200).json(new ApiResponse(200, "Downloadable deleted!!!"));
+});
+
+export {
+  createDownloadable,
+  getAllDownloadables,
+  updateDownloadables,
+  deleteDownloadables,
+};

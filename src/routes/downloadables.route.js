@@ -3,6 +3,7 @@ import {
   createDownloadable,
   getAllDownloadables,
   updateDownloadables,
+  deleteDownloadables,
 } from "../controllers/downloadables.controller.js";
 import { verifyJwt } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
@@ -19,5 +20,6 @@ router
 
 router.route("/get-all").get(getAllDownloadables);
 router.route("/update").post(updateDownloadables);
+router.route("/delete").get(deleteDownloadables);
 
 export default router;
