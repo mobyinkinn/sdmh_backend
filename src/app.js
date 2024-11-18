@@ -26,6 +26,9 @@ import tpaRouter from "./routes/tpa.route.js";
 import eventRouter from "./routes/events.route.js";
 import downloadableRouter from "./routes/downloadables.route.js";
 import noticeRouter from "./routes/notices.route.js";
+import awardsRouter from "./routes/award.route.js";
+import enquiryRouter from "./routes/enquiry.route.js";
+import contactRouter from "./routes/contact.route.js";
 
 //routes declaration
 app.use("/api/v1/admin", adminRouter);
@@ -36,5 +39,8 @@ app.use("/api/v1/tpa", tpaRouter);
 app.use("/api/v1/events", eventRouter);
 app.use("/api/v1/downloadables", downloadableRouter);
 app.use("/api/v1/notices", noticeRouter);
+app.use("/api/v1/awards", awardsRouter);
+app.use("/api/v1/enquiry", enquiryRouter);
+app.use("/api/v1/contact", contactRouter);
 
 export default app;

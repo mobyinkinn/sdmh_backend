@@ -25,19 +25,19 @@ const createDoctor = asyncHandler(async (req, res) => {
     !about ||
     !status
   ) {
-    throw new ApiError(400, "Please fill the required fields");
+    throw new ApiError(400, "Please fill the required fields!!!");
   }
 
   const imageLocalPath = req.files?.image[0]?.path;
 
   if (!imageLocalPath) {
-    throw new ApiError(400, "Image is required");
+    throw new ApiError(400, "Image is required!!!");
   }
 
   const image = await uploadOnCloudinary(imageLocalPath);
 
   if (!image) {
-    throw new ApiError(500, "Image failed to upload");
+    throw new ApiError(500, "Image failed to upload!!!");
   }
 
   const fetchedDepartment = await Department.findOne({ name: department });
@@ -134,7 +134,7 @@ const deleteDoctor = asyncHandler(async (req, res) => {
 });
 
 const getAllDoctors = asyncHandler(async (req, res) => {
-  const allDoctors = await Doctor.find({});
+  const allDoctors = await Doctor.find();
 
   return res
     .status(200)
@@ -162,4 +162,47 @@ const getDoctor = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, "Doctor found", doctors));
 });
 
-export { createDoctor, updateDoctor, deleteDoctor, getAllDoctors, getDoctor };
+const updateImage = asyncHandler(async (req, res) => {
+  const doctor = await Doctor.findById(req.query.id);
+  if (!doctor) {
+    throw new ApiError(400, "No such doctor exists!!!");
+  }
+
+  const imageLocalPath = req.files?.image[0]?.path;
+
+  if (!imageLocalPath) {
+    throw new ApiError(400, "Image is required");
+  }
+
+  const image = await uploadOnCloudinary(imageLocalPath);
+
+  if (!image) {
+    throw new ApiError(500, "Image failed to upload");
+  }
+
+  const updatedDoctor = await Doctor.findByIdAndUpdate(
+    req.query.id,
+    { image: image.url },
+    { new: true }
+  );
+
+  if (!updatedDoctor) {
+    throw new ApiError(
+      500,
+      "Something went wrong while updating the doctor!!!"
+    );
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Doctor found", updatedDoctor));
+});
+
+export {
+  createDoctor,
+  updateDoctor,
+  deleteDoctor,
+  getAllDoctors,
+  getDoctor,
+  updateImage,
+};

@@ -1,12 +1,11 @@
 import { Router } from "express";
 import {
-  createDoctor,
-  deleteDoctor,
-  getAllDoctors,
-  updateDoctor,
-  getDoctor,
+  createAward,
+  getAllAwards,
+  updateAward,
   updateImage,
-} from "../controllers/doctors.controller.js";
+  deleteAward,
+} from "../controllers/awards.controller.js";
 import { verifyJwt } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
 
@@ -20,10 +19,10 @@ router.route("/create").post(
       maxCount: 1,
     },
   ]),
-  createDoctor
+  createAward
 );
-
-router.route("/update").post(verifyJwt, updateDoctor);
+router.route("/get-all").get(getAllAwards);
+router.route("/update").post(verifyJwt, updateAward);
 router.route("/update-image").post(
   verifyJwt,
   upload.fields([
@@ -34,8 +33,6 @@ router.route("/update-image").post(
   ]),
   updateImage
 );
-router.route("/delete").get(verifyJwt, deleteDoctor);
-router.route("/get-all").get(getAllDoctors);
-router.route("/get").post(getDoctor);
+router.route("/delete").get(deleteAward);
 
 export default router;
