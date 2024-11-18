@@ -1,11 +1,11 @@
 import { Router } from "express";
 import {
-  createDownloadable,
-  getAllDownloadables,
-  updateDownloadables,
-  deleteDownloadables,
+  createNotice,
+  getAllNotices,
+  updateNotices,
+  deleteNotice,
   updateFile,
-} from "../controllers/downloadables.controller.js";
+} from "../controllers/notices.controller.js";
 import { verifyJwt } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
 
@@ -16,14 +16,14 @@ router
   .post(
     verifyJwt,
     upload.fields([{ name: "file", maxCount: 1 }]),
-    createDownloadable
+    createNotice
   );
 
-router.route("/get-all").get(getAllDownloadables);
-router.route("/update").post(verifyJwt, updateDownloadables);
+router.route("/get-all").get(getAllNotices);
+router.route("/update").post(verifyJwt, updateNotices);
 router
   .route("/update-file")
   .post(verifyJwt, upload.fields([{ name: "file", maxCount: 1 }]), updateFile);
-router.route("/delete").get(verifyJwt, deleteDownloadables);
+router.route("/delete").get(verifyJwt, deleteNotice);
 
 export default router;

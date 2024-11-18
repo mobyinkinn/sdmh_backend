@@ -24,7 +24,8 @@ import doctorRouter from "./routes/doctor.route.js";
 import academicsRouter from "./routes/academics.route.js";
 import tpaRouter from "./routes/tpa.route.js";
 import eventRouter from "./routes/events.route.js";
-
+import downloadableRouter from "./routes/downloadables.route.js";
+import noticeRouter from "./routes/notices.route.js";
 
 //routes declaration
 app.use("/api/v1/admin", adminRouter);
@@ -33,6 +34,7 @@ app.use("/api/v1/doctor", doctorRouter);
 app.use("/api/v1/academics", academicsRouter);
 app.use("/api/v1/tpa", tpaRouter);
 app.use("/api/v1/events", eventRouter);
-
+app.use("/api/v1/downloadables", downloadableRouter);
+app.use("/api/v1/notices", noticeRouter);
 
 export default app;

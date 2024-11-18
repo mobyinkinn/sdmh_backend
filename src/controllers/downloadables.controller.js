@@ -106,9 +106,47 @@ const deleteDownloadables = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, "Downloadable deleted!!!"));
 });
 
+const updateFile = asyncHandler(async (req, res) => {
+  const id = req.query.id;
+  const isDownloadable = await Downloadables.findById(req.query.id);
+  if (!isDownloadable) {
+    throw new ApiError(400, "No such downloadable exists!!!");
+  }
+
+  const fileLocalPath = req.files?.file[0]?.path;
+  if (!fileLocalPath) {
+    throw new ApiError(400, "File is required!!!");
+  }
+
+  const file = await uploadOnCloudinary(fileLocalPath);
+  if (!file) {
+    throw new ApiError(500, "Failed to upload file!!!");
+  }
+
+  const updatedEntry = await Downloadables.findByIdAndUpdate(
+    id,
+    {
+      file: file.url,
+    },
+    { new: true }
+  );
+
+  if (!updatedEntry) {
+    throw new ApiError(
+      500,
+      "Something went wroong while updating downloadables!!!"
+    );
+  }
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, "File updated successfully!!!", updatedEntry));
+});
+
 export {
   createDownloadable,
   getAllDownloadables,
   updateDownloadables,
   deleteDownloadables,
+  updateFile,
 };
