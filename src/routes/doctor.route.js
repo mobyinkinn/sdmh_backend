@@ -22,7 +22,6 @@ router.route("/create").post(
   ]),
   createDoctor
 );
-
 router.route("/update").post(verifyJwt, updateDoctor);
 router.route("/update-image").post(
   verifyJwt,
