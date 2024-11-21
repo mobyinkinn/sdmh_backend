@@ -108,6 +108,35 @@ const updateImage = asyncHandler(async (req, res) => {
   if (!doesExists) {
     throw new ApiError(400, "No tip found!!!");
   }
+
+  const imageLocalPath = req.files?.image[0]?.path;
+
+  if (!imageLocalPath) {
+    throw new ApiError(400, "Image is required");
+  }
+
+  const image = await uploadOnCloudinary(imageLocalPath);
+
+  if (!image) {
+    throw new ApiError(500, "Image failed to upload");
+  }
+
+  const updatedTip = await Tips.findByIdAndUpdate(
+    req.query.id,
+    { image: image.url },
+    { new: true }
+  );
+
+  if (!updatedTip) {
+    throw new ApiError(
+      500,
+      "Something went wrong while updating the tip image!!!"
+    );
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Tip Image updated", updatedTip));
 });
 
-export { createTip, getAllTips, updateTip, deleteTip };
+export { createTip, getAllTips, updateTip, deleteTip, updateImage };

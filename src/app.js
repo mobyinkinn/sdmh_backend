@@ -33,6 +33,8 @@ import videoRouter from "./routes/video.route.js";
 import openingRouter from "./routes/opening.route.js";
 import careerRouter from "./routes/career.route.js";
 import tipsRouter from "./routes/tips.route.js";
+import testimonialRouter from "./routes/testimonial.route.js";
+import checkupRouter from "./routes/checkup.route.js";
 
 //routes declaration
 app.use("/api/v1/admin", adminRouter);
@@ -50,5 +52,7 @@ app.use("/api/v1/videos", videoRouter);
 app.use("/api/v1/openings", openingRouter);
 app.use("/api/v1/careers", careerRouter);
 app.use("/api/v1/tips", tipsRouter);
+app.use("/api/v1/testimonials", testimonialRouter);
+app.use("/api/v1/checkup", checkupRouter);
 
 export default app;
