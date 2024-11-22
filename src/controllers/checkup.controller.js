@@ -1,4 +1,4 @@
-import { Checkup } from "../models/checkup.module.js";
+import { Checkup } from "../models/checkup.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -10,12 +10,12 @@ const createCheckup = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Please fill all the required fields!!!");
   }
 
-  const unique = await Cheackup.findOne({ title });
+  const unique = await Checkup.findOne({ title });
   if (unique) {
     throw new ApiError(400, "Checkup already exists!!!");
   }
 
-  const imageLocalPath = req.files?.image[0]?.Path;
+  const imageLocalPath = req.files?.image[0]?.path;
   if (!imageLocalPath) {
     throw new ApiError(400, "Image is requried");
   }
@@ -35,7 +35,7 @@ const createCheckup = asyncHandler(async (req, res) => {
     description,
     status,
     image: image.url,
-    banner: banner.url,
+    bannerImage: banner.url,
   });
 
   if (!checkup) {
@@ -51,7 +51,7 @@ const createCheckup = asyncHandler(async (req, res) => {
 });
 
 const getAllCheckups = asyncHandler(async (req, res) => {
-  const checkups = await Cheackup.find();
+  const checkups = await Checkup.find();
   if (!checkups) {
     throw new ApiError(
       500,
@@ -61,7 +61,7 @@ const getAllCheckups = asyncHandler(async (req, res) => {
 
   res
     .status(200)
-    .json(new ApiResponse(200, "Checkup fetched successfylly", getAllCheckups));
+    .json(new ApiResponse(200, "Checkup fetched successfylly", checkups));
 });
 
 const deleteCheckup = asyncHandler(async (req, res) => {
@@ -90,7 +90,7 @@ const updateImage = asyncHandler(async (req, res) => {
   const imageLocalPath = req.files?.image[0]?.path;
   const image = await uploadOnCloudinary(imageLocalPath);
 
-  const updatedCheckup = await findByIdAndUpdate(
+  const updatedCheckup = await Checkup.findByIdAndUpdate(
     req.query.id,
     { $set: { image: image.url } },
     { new: true }
@@ -118,9 +118,9 @@ const updateBanner = asyncHandler(async (req, res) => {
   const bannerLocalPath = req.files?.banner[0]?.path;
   const banner = await uploadOnCloudinary(bannerLocalPath);
 
-  const updatedCheckup = await findByIdAndUpdate(
+  const updatedCheckup = await Checkup.findByIdAndUpdate(
     req.query.id,
-    { $set: { banner: banner.url } },
+    { $set: { bannerImage: banner.url } },
     { new: true }
   );
   if (!updatedCheckup) {
@@ -153,7 +153,7 @@ const updateCheckup = asyncHandler(async (req, res) => {
     throw new ApiError(400, "All fields are empty!!!");
   }
 
-  const updatedCheckup = await findByIdAndUpdate(
+  const updatedCheckup = await Checkup.findByIdAndUpdate(
     req.query.id,
     { $set: req.body },
     { new: true }
@@ -162,7 +162,7 @@ const updateCheckup = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Something went wrong while updating the website");
   }
 
-  res.status(200).JSON(new ApiResponse(200, "Checkup updated", updatedCheckup));
+  res.status(200).json(new ApiResponse(200, "Checkup updated", updatedCheckup));
 });
 
 export {

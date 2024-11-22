@@ -49,7 +49,9 @@ const getAllTestimonials = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Something went wrong while creating the order!!!");
   }
 
-  res.status(200).json(new ApiResponse(200, "Testimonials sent!!"));
+  res
+    .status(200)
+    .json(new ApiResponse(200, "Testimonials sent!!", testimonials));
 });
 
 const deleteTestimonial = asyncHandler(async (req, res) => {
