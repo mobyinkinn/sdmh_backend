@@ -7,29 +7,33 @@ const eventsSchema = new Schema(
       required: true,
       trim: true,
     },
-    SmallDescription: {
+    smallDescription: {
       type: String,
       required: true,
       trim: true,
     },
-    Description: {
+    description: {
       type: String,
       required: true,
       trim: true,
     },
-    Date: {
+    featured: {
+      type: Boolean,
+      required: true,
+    },
+    date: {
       type: String,
       required: true,
       trim: true,
     },
-    image: {
-      type: String,
+    images: {
+      type: [String],
       required: true,
       trim: true,
     },
     status: {
       type: Boolean,
-      default:false
+      default: true,
     },
   },
   { timestamps: true }
