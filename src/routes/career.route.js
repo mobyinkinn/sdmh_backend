@@ -17,6 +17,6 @@ router
     createCareer
   );
 router.route("/get-all").get(getAllCareers);
-router.route("/delete").get(deleteCareer);
+router.route("/delete").get(verifyJwt, deleteCareer);
 
 export default router;

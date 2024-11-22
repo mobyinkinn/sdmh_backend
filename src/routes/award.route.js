@@ -33,6 +33,6 @@ router.route("/update-image").post(
   ]),
   updateImage
 );
-router.route("/delete").get(deleteAward);
+router.route("/delete").get(verifyJwt, deleteAward);
 
 export default router;

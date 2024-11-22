@@ -152,8 +152,6 @@ const addImages = asyncHandler(async (req, res) => {
     throw new ApiError(400, "No event found!!!");
   }
 
-  console.log(req.files);
-
   const existingImages = event.images.length;
   const incomingImages = req.files.images.length;
 

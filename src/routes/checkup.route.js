@@ -42,6 +42,6 @@ router
     updateBanner
   );
 router.route("/delete").get(verifyJwt, deleteCheckup);
-router.route("/get-all").get(verifyJwt, getAllCheckups);
+router.route("/get-all").get(getAllCheckups);
 
 export default router;

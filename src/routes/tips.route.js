@@ -16,7 +16,7 @@ router
   .post(verifyJwt, upload.fields([{ name: "image", maxCount: 1 }]), createTip);
 
 router.route("/get-all").get(getAllTips);
-router.route("/update").post(updateTip);
+router.route("/update").post(verifyJwt, updateTip);
 router
   .route("/update-image")
   .post(
@@ -24,6 +24,6 @@ router
     upload.fields([{ name: "image", maxCount: 1 }]),
     updateImage
   );
-router.route("/delete").get(deleteTip);
+router.route("/delete").get(verifyJwt, deleteTip);
 
 export default router;

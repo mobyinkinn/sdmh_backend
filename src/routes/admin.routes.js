@@ -13,7 +13,7 @@ import { verifyJwt } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
-router.route("/register").post(registerAdmin);
+router.route("/register").post(verifyJwt, registerAdmin);
 router.route("/login").post(loginAdmin);
 
 //secured routes

@@ -14,7 +14,7 @@ router
   .route("/create")
   .post(verifyJwt, upload.fields([{ name: "logo", maxCount: 1 }]), createTpa);
 router.route("/get-all").get(getAllTpas);
-router.route("/update").post(updateTpa);
+router.route("/update").post(verifyJwt, updateTpa);
 router.route("/get").post(getTpa);
 
 export default router;
