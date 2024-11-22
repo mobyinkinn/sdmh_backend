@@ -4,7 +4,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { Events } from "../models/events.model.js";
 const createEvents = asyncHandler(async (req, res) => {
-  const { title, SmallDescription, Description, Date } = req.body;
+  const { title, SmallDescription, Description, Date,status } = req.body;
 console.log("rew",req.body)
   if (!title || !SmallDescription || !Description || !Date) {
     throw new ApiError(400, "Please fill the required fields!!!");
