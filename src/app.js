@@ -12,7 +12,6 @@ app.use(
 );
 
 app.use(e.json({ limit: "16kb" }));
-// app.use(e.json());
 app.use(e.urlencoded({ extended: true, limit: "16kb" }));
 app.use(e.static("public"));
 app.use(cookieParser());
@@ -35,6 +34,7 @@ import careerRouter from "./routes/career.route.js";
 import tipsRouter from "./routes/tips.route.js";
 import testimonialRouter from "./routes/testimonial.route.js";
 import checkupRouter from "./routes/checkup.route.js";
+import bannerRouter from "./routes/banner.route.js";
 
 //routes declaration
 app.use("/api/v1/admin", adminRouter);
@@ -54,5 +54,6 @@ app.use("/api/v1/careers", careerRouter);
 app.use("/api/v1/tips", tipsRouter);
 app.use("/api/v1/testimonials", testimonialRouter);
 app.use("/api/v1/checkup", checkupRouter);
+app.use("/api/v1/banner", bannerRouter);
 
 export default app;
