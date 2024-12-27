@@ -134,5 +134,64 @@ const updateFile = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, "File updated successfully!!!", updatedEntry));
 });
+const blockNotice = asyncHandler(async (req, res) => {
+  const { id } = req.query;
 
-export { createNotice, getAllNotices, updateNotices, deleteNotice, updateFile };
+  const notices = await Notices.findById(id);
+  if (!notices) {
+    throw new ApiError(400, "Notice not found!!!");
+  }
+
+  // Update the status to false (blocked)
+  notices.status = false;
+
+  const updatedNotice = await notices.save();
+  if (!updatedNotice) {
+    throw new ApiError(
+      500,
+      "Something went wrong while blocking the Notices!!!"
+    );
+  }
+
+  res.status(200).json(
+    new ApiResponse(200, "Notice blocked successfully!!!", {
+      Notice: updatedNotice,
+    })
+  );
+});
+
+// Unblock Testimonial function
+const unblockNotice = asyncHandler(async (req, res) => {
+  const { id } = req.query;
+
+  const notices = await Notices.findById(id);
+  if (!notices) {
+    throw new ApiError(400, "Notice not found!!!");
+  }
+
+  // Update the status to true (unblocked)
+  notices.status = true;
+
+  const updatedNotice = await notices.save();
+  if (!updatedNotice) {
+    throw new ApiError(
+      500,
+      "Something went wrong while unblocking the blog!!!"
+    );
+  }
+
+  res.status(200).json(
+    new ApiResponse(200, "blog unblocked successfully!!!", {
+      notice: updatedNotice,
+    })
+  );
+});
+export {
+  createNotice,
+  getAllNotices,
+  updateNotices,
+  deleteNotice,
+  updateFile,
+  blockNotice,
+  unblockNotice,
+};

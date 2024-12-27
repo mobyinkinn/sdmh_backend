@@ -53,7 +53,6 @@ const getAllTestimonials = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, "Testimonials sent!!", testimonials));
 });
-
 const deleteTestimonial = asyncHandler(async (req, res) => {
   const isAvailable = await Testimonial.findById(req.query.id);
   if (!isAvailable) {
@@ -74,4 +73,55 @@ const deleteTestimonial = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "Testimonial deleted successfully!!!"));
 });
 
-export { createTestimonial, deleteTestimonial, getAllTestimonials };
+// Block Testimonial function
+const blockTestimonial = asyncHandler(async (req, res) => {
+  const { id } = req.query;
+
+  const testimonial = await Testimonial.findById(id);
+  if (!testimonial) {
+    throw new ApiError(400, "Testimonial not found!!!");
+  }
+
+  // Update the status to false (blocked)
+  testimonial.status = false;
+
+  const updatedTestimonial = await testimonial.save();
+  if (!updatedTestimonial) {
+    throw new ApiError(500, "Something went wrong while blocking the testimonial!!!");
+  }
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, "Testimonial blocked successfully!!!", { testimonial: updatedTestimonial }));
+});
+
+// Unblock Testimonial function
+const unblockTestimonial = asyncHandler(async (req, res) => {
+  const { id } = req.query;
+
+  const testimonial = await Testimonial.findById(id);
+  if (!testimonial) {
+    throw new ApiError(400, "Testimonial not found!!!");
+  }
+
+  // Update the status to true (unblocked)
+  testimonial.status = true;
+
+  const updatedTestimonial = await testimonial.save();
+  if (!updatedTestimonial) {
+    throw new ApiError(500, "Something went wrong while unblocking the testimonial!!!");
+  }
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, "Testimonial unblocked successfully!!!", { testimonial: updatedTestimonial }));
+});
+
+
+export {
+  createTestimonial,
+  deleteTestimonial,
+  getAllTestimonials,
+  blockTestimonial,
+  unblockTestimonial,
+};

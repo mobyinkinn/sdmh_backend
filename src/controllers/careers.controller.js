@@ -71,4 +71,62 @@ const deleteCareer = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, "Career deleted successfully!!!"));
 });
 
-export { createCareer, getAllCareers, deleteCareer };
+const blockCareers = asyncHandler(async (req, res) => {
+  const { id } = req.query;
+
+  const career = await Careers.findById(id);
+  if (!career) {
+    throw new ApiError(400, "Careers not found!!!");
+  }
+
+  // Update the status to false (blocked)
+  career.status = false;
+
+  const updatedCareers = await career.save();
+  if (!updatedCareers) {
+    throw new ApiError(
+      500,
+      "Something went wrong while blocking the Careers!!!"
+    );
+  }
+
+  res.status(200).json(
+    new ApiResponse(200, "Careers blocked successfully!!!", {
+      career: updatedCareers,
+    })
+  );
+});
+
+// Unblock Careers function
+const unblockCareers = asyncHandler(async (req, res) => {
+  const { id } = req.query;
+
+  const career = await Careers.findById(id);
+  if (!career) {
+    throw new ApiError(400, "Careers not found!!!");
+  }
+
+  // Update the status to true (unblocked)
+  career.status = true;
+
+  const updatedCareers = await career.save();
+  if (!updatedCareers) {
+    throw new ApiError(
+      500,
+      "Something went wrong while unblocking the Careers!!!"
+    );
+  }
+
+  res.status(200).json(
+    new ApiResponse(200, "Careers unblocked successfully!!!", {
+      career: updatedCareers,
+    })
+  );
+});
+export {
+  createCareer,
+  getAllCareers,
+  deleteCareer,
+  unblockCareers,
+  blockCareers,
+};

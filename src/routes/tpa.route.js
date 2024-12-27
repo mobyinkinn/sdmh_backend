@@ -1,8 +1,11 @@
 import { Router } from "express";
 import {
+  blockTpa,
   createTpa,
+  deleteTpa,
   getAllTpas,
   getTpa,
+  unblockTpa,
   updateTpa,
 } from "../controllers/tpa.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
@@ -16,5 +19,7 @@ router
 router.route("/get-all").get(getAllTpas);
 router.route("/update").post(verifyJwt, updateTpa);
 router.route("/get").post(getTpa);
-
+router.route("/delete").get(verifyJwt, deleteTpa);
+router.route("/block-tpa").patch(verifyJwt, blockTpa);
+router.route("/unblock-tpa").patch(verifyJwt, unblockTpa);
 export default router;

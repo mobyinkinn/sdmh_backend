@@ -5,6 +5,8 @@ import {
   updateNotices,
   deleteNotice,
   updateFile,
+  blockNotice,
+  unblockNotice,
 } from "../controllers/notices.controller.js";
 import { verifyJwt } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
@@ -25,5 +27,6 @@ router
   .route("/update-file")
   .post(verifyJwt, upload.fields([{ name: "file", maxCount: 1 }]), updateFile);
 router.route("/delete").get(verifyJwt, deleteNotice);
-
+router.route("/block-notice").patch(verifyJwt, blockNotice );
+router.route("/unblock-notice").patch(verifyJwt, unblockNotice)
 export default router;

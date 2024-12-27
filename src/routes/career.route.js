@@ -5,6 +5,8 @@ import {
   createCareer,
   getAllCareers,
   deleteCareer,
+  blockCareers,
+  unblockCareers,
 } from "../controllers/careers.controller.js";
 
 const router = Router();
@@ -18,5 +20,7 @@ router
   );
 router.route("/get-all").get(getAllCareers);
 router.route("/delete").get(verifyJwt, deleteCareer);
+router.route("/block-careers").patch(verifyJwt, blockCareers);
+router.route("/unblock-careers").patch(verifyJwt, unblockCareers);
 
 export default router;

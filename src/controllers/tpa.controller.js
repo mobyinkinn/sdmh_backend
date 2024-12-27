@@ -75,7 +75,67 @@ const updateTpa = asyncHandler(async (req, res) => {
 
   res.status(200).json(200, "Tpa updated successfully");
 });
+const deleteTpa = asyncHandler(async (req, res) => {
+  const exists = await Tpa.findById(req.query.id);
+  if (!exists) {
+    throw new ApiError(400, "No event found");
+  }
 
+  const deletedTpa = await Tpa.findByIdAndDelete(req.query.id);
+
+  if (!deletedTpa) {
+    throw new ApiError(500, "Something went wrong while deleting the tpa");
+  }
+
+  res.status(200).json(new ApiResponse(200, "Event deleted successfully"));
+});
+
+const blockTpa = asyncHandler(async (req, res) => {
+  const { id } = req.query;
+
+  const tpa = await Tpa.findById(id);
+  if (!tpa) {
+    throw new ApiError(400, "Tpa not found!!!");
+  }
+
+  // Update the status to false (blocked)
+  tpa.status = false;
+
+  const updatedTpa = await tpa.save();
+  if (!updatedTpa) {
+    throw new ApiError(500, "Something went wrong while blocking the blogs!!!");
+  }
+
+  res.status(200).json(
+    new ApiResponse(200, "blog blocked successfully!!!", {
+      tpa: updatedTpa,
+    })
+  );
+});
+
+// Unblock Testimonial function
+const unblockTpa = asyncHandler(async (req, res) => {
+  const { id } = req.query;
+
+  const tpa = await Tpa.findById(id);
+  if (!tpa) {
+    throw new ApiError(400, "Tpa not found!!!");
+  }
+
+  // Update the status to true (unblocked)
+  tpa.status = true;
+
+  const updatedTpa = await tpa.save();
+  if (!updatedTpa) {
+    throw new ApiError(500, "Something went wrong while unblocking the Tpa!!!");
+  }
+
+  res.status(200).json(
+    new ApiResponse(200, "blog unblocked successfully!!!", {
+      tpa: updateTpa,
+    })
+  );
+});
 const getTpa = asyncHandler(async (req, res) => {
   const { id, name } = req.body;
 
@@ -97,4 +157,12 @@ const getTpa = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, "Tpa found", tpa));
 });
 
-export { createTpa, getAllTpas, updateTpa, getTpa };
+export {
+  createTpa,
+  getAllTpas,
+  updateTpa,
+  getTpa,
+  deleteTpa,
+  unblockTpa,
+  blockTpa,
+};

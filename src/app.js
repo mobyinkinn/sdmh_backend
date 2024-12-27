@@ -36,7 +36,7 @@ import tipsRouter from "./routes/tips.route.js";
 import testimonialRouter from "./routes/testimonial.route.js";
 import checkupRouter from "./routes/checkup.route.js";
 import bannerRouter from "./routes/banner.route.js";
-
+import blogsRouter from "./routes/blogs.route.js"
 //routes declaration
 app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/department", departmentRouter);
@@ -44,6 +44,7 @@ app.use("/api/v1/doctor", doctorRouter);
 app.use("/api/v1/academics", academicsRouter);
 app.use("/api/v1/tpa", tpaRouter);
 app.use("/api/v1/events", eventRouter);
+app.use("/api/v1/blogs", blogsRouter);
 app.use("/api/v1/downloadables", downloadableRouter);
 app.use("/api/v1/notices", noticeRouter);
 app.use("/api/v1/awards", awardsRouter);
