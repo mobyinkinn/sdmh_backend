@@ -5,7 +5,8 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 const createBanner = asyncHandler(async (req, res) => {
-  const { page } = req.body;
+  const { page, status } = req.body;
+  console.log("Re",req.body)
   if (!page) {
     throw new ApiError(400, "Page is required!!!");
   }
@@ -28,7 +29,7 @@ const createBanner = asyncHandler(async (req, res) => {
     );
   }
 
-  const banner = await Banner.create({ page, banner: bannerUrl.url });
+  const banner = await Banner.create({ page, banner: bannerUrl.url,status });
   if (!banner) {
     throw new ApiError(
       500,
@@ -138,11 +139,68 @@ const deleteBanner = asyncHandler(async (req, res) => {
 
   res.status(200).json(new ApiResponse(200, "Banner deleted successfully!!!"));
 });
+const blockBanner = asyncHandler(async (req, res) => {
+  const { id } = req.query;
 
+  const banner = await Banner.findById(id);
+  if (!banner) {
+    throw new ApiError(400, "Banner not found!!!");
+  }
+
+  // Update the status to false (blocked)
+  banner.status = false;
+
+  const updatedBanner = await banner.save();
+  if (!updatedBanner) {
+    throw new ApiError(
+      500,
+      "Something went wrong while blocking the Banner!!!"
+    );
+  }
+
+  res
+    .status(200)
+    .json(
+      new ApiResponse(200, "Banner blocked successfully!!!", {
+        Banner: updatedBanner,
+      })
+    );
+});
+
+// Unblock Banner function
+const unblockBanner = asyncHandler(async (req, res) => {
+  const { id } = req.query;
+
+  const banner = await Banner.findById(id);
+  if (!banner) {
+    throw new ApiError(400, "Banner not found!!!");
+  }
+
+  // Update the status to true (unblocked)
+  banner.status = true;
+
+  const updatedBanner = await banner.save();
+  if (!updatedBanner) {
+    throw new ApiError(
+      500,
+      "Something went wrong while unblocking the Banner!!!"
+    );
+  }
+
+  res
+    .status(200)
+    .json(
+      new ApiResponse(200, "Banner unblocked successfully!!!", {
+        Banner: updatedBanner,
+      })
+    );
+});
 export {
   createBanner,
   getAllBanners,
   getBannerByPage,
   updateBanner,
   deleteBanner,
+  blockBanner,
+  unblockBanner
 };

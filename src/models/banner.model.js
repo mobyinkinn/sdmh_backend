@@ -11,6 +11,11 @@ const bannerSchema = new Schema(
       required: true,
       unique: true,
     },
+    status: {
+      type: Boolean,
+      required: true,
+      trim: true,
+    },
   },
   { timestamps: true }
 );

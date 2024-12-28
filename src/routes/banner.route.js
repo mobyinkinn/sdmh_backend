@@ -1,8 +1,10 @@
 import {
+  blockBanner,
   createBanner,
   deleteBanner,
   getAllBanners,
   getBannerByPage,
+  unblockBanner,
   updateBanner,
 } from "../controllers/banner.controller.js";
 import { Router } from "express";
@@ -34,5 +36,7 @@ router.route("/update/").post(
   updateBanner
 );
 router.route("/delete").get(deleteBanner);
+router.route("/block-banner").patch(verifyJwt, blockBanner);
+router.route("/unblock-banner").patch(verifyJwt, unblockBanner);
 
 export default router;
