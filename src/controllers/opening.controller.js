@@ -6,12 +6,18 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 const createOpening = asyncHandler(async (req, res) => {
   const { position, seats, lastDate, programmer, number, jd, status } =
     req.body;
-
+console.log("re",req.body)
   if (!position || !seats || !lastDate || !programmer || !number || !jd) {
     throw new ApiError(400, "Please fill the required fields!!!");
   }
 
-  const createdOpening = await Openings.create(req.body);
+  const createdOpening = await Openings.create({
+    position,
+    seats,
+    lastDate,
+    programmer,
+    number,jd,status
+  });
   if (!createdOpening) {
     throw new ApiError(
       500,
@@ -82,4 +88,64 @@ const deleteOpening = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, "Opening deleted!!!"));
 });
 
-export { createOpening, getAllOpenings, updateOpening, deleteOpening };
+
+const blockOpening = asyncHandler(async (req, res) => {
+  const { id } = req.query;
+
+  const opening = await Openings.findById(id);
+  if (!opening) {
+    throw new ApiError(400, "opening not found!!!");
+  }
+
+  // Update the status to false (blocked)
+  opening.status = false;
+
+  const updatedOpening = await opening.save();
+  if (!updatedOpening) {
+    throw new ApiError(
+      500,
+      "Something went wrong while blocking the Opneing!!!"
+    );
+  }
+
+  res.status(200).json(
+    new ApiResponse(200, "Opneing blocked successfully!!!", {
+      Openings: updatedOpening,
+    })
+  );
+});
+
+// Unblock Testimonial function
+const unblockOpening = asyncHandler(async (req, res) => {
+  const { id } = req.query;
+
+  const opening = await Openings.findById(id);
+  if (!opening) {
+    throw new ApiError(400, "Opening not found!!!");
+  }
+
+  // Update the status to true (unblocked)
+  opening.status = true;
+
+  const updatedOpening = await opening.save();
+  if (!updatedOpening) {
+    throw new ApiError(
+      500,
+      "Something went wrong while unblocking the Opening!!!"
+    );
+  }
+
+  res.status(200).json(
+    new ApiResponse(200, "Opening unblocked successfully!!!", {
+      opening: updatedOpening,
+    })
+  );
+});
+export {
+  createOpening,
+  getAllOpenings,
+  updateOpening,
+  deleteOpening,
+  blockOpening,
+  unblockOpening,
+};
