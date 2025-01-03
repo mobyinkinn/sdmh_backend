@@ -146,10 +146,100 @@ const deleteDepartment = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "Department deleted successfully"));
 });
 
+const updateImage = asyncHandler(async (req, res) => {
+  const { id } = req.query;
+  if (!id) {
+    throw new ApiError(400, "Id is required!!!");
+  }
+
+  const department = await Department.findOne({ _id: id });
+  if (!department) {
+    throw new ApiError(400, "No department found!!!");
+  }
+
+  const imageLocalPath = req.files?.image[0]?.path;
+  if (!imageLocalPath) {
+    throw new ApiError(400, "Image is required!!!");
+  }
+
+  const image = await uploadOnCloudinary(imageLocalPath);
+  if (!image) {
+    throw new ApiError(
+      500,
+      "Something went wrong while uploading the image!!!"
+    );
+  }
+
+  const updatedDepartment = await Department.findByIdAndUpdate(
+    id,
+    {
+      $set: { image: image.url },
+    },
+    { new: true }
+  );
+
+  if (!updatedDepartment) {
+    throw new ApiError(
+      500,
+      "Something went wrong while updating the database!!!"
+    );
+  }
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, "Image updated!!!", updatedDepartment));
+});
+
+const updateBanner = asyncHandler(async (req, res) => {
+  const { id } = req.query;
+  if (!id) {
+    throw new ApiError(400, "Id is required!!!");
+  }
+
+  const department = await Department.findOne({ _id: id });
+  if (!department) {
+    throw new ApiError(400, "No department found!!!");
+  }
+
+  const imageLocalPath = req.files?.banner[0]?.path;
+  if (!imageLocalPath) {
+    throw new ApiError(400, "Image is required!!!");
+  }
+
+  const image = await uploadOnCloudinary(imageLocalPath);
+  if (!image) {
+    throw new ApiError(
+      500,
+      "Something went wrong while uploading the image!!!"
+    );
+  }
+
+  const updatedDepartment = await Department.findByIdAndUpdate(
+    id,
+    {
+      $set: { bannerImage: image.url },
+    },
+    { new: true }
+  );
+
+  if (!updatedDepartment) {
+    throw new ApiError(
+      500,
+      "Something went wrong while updating the database!!!"
+    );
+  }
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, "Image updated!!!", updatedDepartment));
+});
+
 export {
   createDepartment,
   getAllDepartments,
   updateDepartment,
   getDepartment,
   deleteDepartment,
+  updateImage,
+  updateBanner,
 };
