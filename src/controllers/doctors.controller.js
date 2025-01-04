@@ -87,7 +87,7 @@ const updateDoctor = asyncHandler(async (req, res) => {
     !floor &&
     !room &&
     !about &&
-    !status
+    !(status === true || status === false)
   ) {
     throw new ApiError(400, "All fields are empty");
   }

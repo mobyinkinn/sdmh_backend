@@ -7,6 +7,7 @@ import {
   getTpa,
   unblockTpa,
   updateTpa,
+  updateLogo,
 } from "../controllers/tpa.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJwt } from "../middlewares/auth.middleware.js";
@@ -22,4 +23,8 @@ router.route("/get").post(getTpa);
 router.route("/delete").get(verifyJwt, deleteTpa);
 router.route("/block-tpa").patch(verifyJwt, blockTpa);
 router.route("/unblock-tpa").patch(verifyJwt, unblockTpa);
+router
+  .route("/update-logo")
+  .post(verifyJwt, upload.fields([{ name: "logo", maxCount: 1 }]), updateLogo);
+
 export default router;

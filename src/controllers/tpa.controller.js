@@ -59,7 +59,7 @@ const updateTpa = asyncHandler(async (req, res) => {
     throw new ApiError(400, "No such tpa exists");
   }
 
-  if (!name && !status) {
+  if (!name) {
     throw new ApiError(400, "Please fill the required fields");
   }
 
@@ -157,6 +157,38 @@ const getTpa = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, "Tpa found", tpa));
 });
 
+const updateLogo = asyncHandler(async (req, res) => {
+  const id = req.query.id;
+  if (!id) {
+    throw new ApiError(400, "Id is required!!!");
+  }
+
+  const tpa = await Tpa.findOne({ _id: id });
+  if (!tpa) {
+    throw new ApiError(400, "No tpa found!!!");
+  }
+
+  const localFilePath = req.files?.logo[0]?.path;
+  if (!localFilePath) {
+    throw new ApiError(400, "Logo is required!!!");
+  }
+
+  const logo = await uploadOnCloudinary(localFilePath);
+  if (!logo) {
+    throw new ApiError(500, "Something went wrong while uploading the logo!!!");
+  }
+
+  const updatedTpa = await Tpa.findByIdAndUpdate(
+    id,
+    { $set: { logo: logo.url } },
+    { new: true }
+  );
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, "Logo updated successfully!!!", updatedTpa));
+});
+
 export {
   createTpa,
   getAllTpas,
@@ -165,4 +197,5 @@ export {
   deleteTpa,
   unblockTpa,
   blockTpa,
+  updateLogo,
 };
