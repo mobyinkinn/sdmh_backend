@@ -59,20 +59,21 @@ const getAllDownloadables = asyncHandler(async (req, res) => {
 
 const updateDownloadables = asyncHandler(async (req, res) => {
   const { name, type, status } = req.body;
+  console.log(req.body);
 
   const isDownloadable = await Downloadables.findById(req.query.id);
   if (!isDownloadable) {
     throw new ApiError(400, "No such downloadable exists!!!");
   }
 
-  if (!name && !type && !status) {
+  if (!name && !type && !(status === true || status === false)) {
     throw new ApiError(400, "All fields are empty");
   }
 
   const filter = {};
   if (name) filter.name = name;
   if (type) filter.type = type;
-  if (status) filter.status = status;
+  if (status === true || status === false) filter.status = status;
 
   const updatedDownloadable = await Downloadables.findByIdAndUpdate(
     req.query.id,

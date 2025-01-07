@@ -136,6 +136,13 @@ const deleteDoctor = asyncHandler(async (req, res) => {
 const getAllDoctors = asyncHandler(async (req, res) => {
   const allDoctors = await Doctor.find();
 
+  if (!allDoctors) {
+    throw new ApiError(
+      500,
+      "Something went wrong while fetching the doctors!!!"
+    );
+  }
+
   return res
     .status(200)
     .json(new ApiResponse(200, allDoctors, "Doctors sent successfully!!!"));
