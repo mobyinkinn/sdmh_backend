@@ -1,7 +1,18 @@
 import { Router } from "express";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJwt } from "../middlewares/auth.middleware.js";
-import { addImages, blockBlog, createBlogs, deleteBlog, getAllBlogs, getBannerById, unblockBlog, updateBlog, updateImage, updateImages } from "../controllers/blogs.controller.js";
+import {
+  addImages,
+  blockBlog,
+  createBlogs,
+  deleteBlog,
+  getAllBlogs,
+  getBannerById,
+  unblockBlog,
+  updateBlog,
+  updateImage,
+  updateImages,
+} from "../controllers/blogs.controller.js";
 // import {
 //   createEvents,
 //   getAllEvents,
@@ -16,8 +27,8 @@ const router = Router();
 router.route("/create").post(
   verifyJwt,
   upload.fields([
-    { name: "images", maxCount: 6 }, 
-    { name: "image", maxCount: 1 }, 
+    { name: "images", maxCount: 6 },
+    { name: "image", maxCount: 1 },
   ]),
   createBlogs
 );

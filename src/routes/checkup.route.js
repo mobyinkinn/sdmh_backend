@@ -8,6 +8,9 @@ import {
   updateCheckup,
   deleteCheckup,
   getAllCheckups,
+  blockCheckup,
+  unblockCheckup,
+  getCheckupById,
 } from "../controllers/checkup.controller.js";
 
 const router = Router();
@@ -43,5 +46,9 @@ router
   );
 router.route("/delete").get(verifyJwt, deleteCheckup);
 router.route("/get-all").get(getAllCheckups);
+
+router.route("/block-checkup").patch(verifyJwt, blockCheckup);
+router.route("/unblock-checkup").patch(verifyJwt, unblockCheckup);
+router.route("/get-by-id").get(verifyJwt, getCheckupById);
 
 export default router;

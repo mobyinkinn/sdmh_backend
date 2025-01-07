@@ -149,7 +149,7 @@ const updateCheckup = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Checkup not found!!!");
   }
 
-  if (!status && !title && !description) {
+  if (!title && !description) {
     throw new ApiError(400, "All fields are empty!!!");
   }
 
@@ -158,11 +158,80 @@ const updateCheckup = asyncHandler(async (req, res) => {
     { $set: req.body },
     { new: true }
   );
+
   if (!updatedCheckup) {
     throw new ApiError(500, "Something went wrong while updating the website");
   }
 
   res.status(200).json(new ApiResponse(200, "Checkup updated", updatedCheckup));
+});
+
+const blockCheckup = asyncHandler(async (req, res) => {
+  const { id } = req.query;
+
+  const checkup = await Checkup.findById(id);
+  if (!checkup) {
+    throw new ApiError(400, "checkup not found!!!");
+  }
+
+  // Update the status to false (blocked)
+  checkup.status = false;
+
+  const updatedCheckup = await checkup.save();
+  if (!updatedCheckup) {
+    throw new ApiError(
+      500,
+      "Something went wrong while blocking the checkup!!!"
+    );
+  }
+
+  res.status(200).json(
+    new ApiResponse(200, "checkup blocked successfully!!!", {
+      checkup: updatedCheckup,
+    })
+  );
+});
+
+// Unblock Testimonial function
+const unblockCheckup = asyncHandler(async (req, res) => {
+  const { id } = req.query;
+
+  const checkup = await Checkup.findById(id);
+  if (!checkup) {
+    throw new ApiError(400, "checkup not found!!!");
+  }
+
+  // Update the status to true (unblocked)
+  checkup.status = true;
+
+  const updatedCheckup = await checkup.save();
+  if (!updatedCheckup) {
+    throw new ApiError(
+      500,
+      "Something went wrong while unblocking the checkup!!!"
+    );
+  }
+
+  res.status(200).json(
+    new ApiResponse(200, "checkup unblocked successfully!!!", {
+      checkup: updatedCheckup,
+    })
+  );
+});
+
+const getCheckupById = asyncHandler(async (req, res) => {
+  const { _id } = req.query;
+
+  if (!_id) {
+    throw new ApiError(400, "Checkup is required!!!");
+  }
+
+  const checkup = await Checkup.findOne({ _id });
+  if (!checkup) {
+    throw new ApiError(400, "No Checkup found");
+  }
+
+  res.status(200).json(new ApiResponse(200, "Checkup by id!!!", checkup));
 });
 
 export {
@@ -172,4 +241,7 @@ export {
   updateBanner,
   updateImage,
   updateCheckup,
+  blockCheckup,
+  unblockCheckup,
+  getCheckupById,
 };
