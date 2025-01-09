@@ -2,7 +2,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
-import { Blogs } from "../models/Blogs.model.js";
+import { Blogs } from "../models/blogs.model.js";
 
 const createBlogs = asyncHandler(async (req, res) => {
   const { title, smallDescription, description, date, status } =
