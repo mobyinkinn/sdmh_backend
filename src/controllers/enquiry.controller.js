@@ -6,12 +6,12 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 
 const createEnquiry = asyncHandler(async (req, res) => {
   const { name, phone, message, date, email } = req.body;
-
+console.log("re",req.body)
   if (!name || !phone || !message || !date || !email) {
     throw new ApiError(400, "Plese fill the required fields!!!");
   }
 
-  const enquiry = await Enquiry.create(req.body);
+  const enquiry = await Enquiry.create({ name, phone, message, date, email });
 
   if (!enquiry) {
     throw new ApiError(500, "Something went wrong while creating the enquiry");
