@@ -5,9 +5,20 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 const createCareer = asyncHandler(async (req, res) => {
-  const { position, name, email, phone, city, dateApplied, status } = req.body;
+  const {
+    position,
+    name,
+    email,
+    phone,
+    city,
+    dateApplied,
+    experience,
+    designation,
+    ctc,
+  } = req.body;
 
-  if (!position || !email || !name || !phone || !city || !dateApplied) {
+  if (!position || !email || !name || !phone || !city || !dateApplied ||!experience
+    || !designation ||!ctc) {
     throw new ApiError(400, "Please fill the required fields!!!");
   }
 
@@ -28,7 +39,9 @@ const createCareer = asyncHandler(async (req, res) => {
     phone,
     city,
     dateApplied,
-    status,
+    experience,
+    designation,
+    ctc,
     resume: file.url,
   });
 
