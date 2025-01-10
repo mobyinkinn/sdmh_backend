@@ -5,8 +5,7 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { Blogs } from "../models/blogs.model.js";
 
 const createBlogs = asyncHandler(async (req, res) => {
-  const { title, smallDescription, description, date, status } =
-    req.body;
+  const { title, smallDescription, description, date, status } = req.body;
   if (!title || !smallDescription || !description || !date) {
     throw new ApiError(400, "Please fill the required fields!!!");
   }
@@ -16,15 +15,15 @@ const createBlogs = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Blog already exists");
   }
 
- const imageLocalPath = req.files?.image[0]?.path;
- if (!imageLocalPath) {
-   throw new ApiError(400, "Image is required!!!");
- }
+  const imageLocalPath = req.files?.image[0]?.path;
+  if (!imageLocalPath) {
+    throw new ApiError(400, "Image is required!!!");
+  }
 
- const image = await uploadOnCloudinary(imageLocalPath);
- if (!image) {
-   throw new ApiError(500, "Image failed to upload!!!");
- }
+  const image = await uploadOnCloudinary(imageLocalPath);
+  if (!image) {
+    throw new ApiError(500, "Image failed to upload!!!");
+  }
 
   const images = [];
 
@@ -76,16 +75,9 @@ const getAllBlogs = asyncHandler(async (req, res) => {
 });
 
 const updateBlog = asyncHandler(async (req, res) => {
-  const { title, smallDescription, description, date, status } =
-    req.body;
+  const { title, smallDescription, description, date, status } = req.body;
 
-  if (
-    !title &&
-    !smallDescription &&
-    !description &&
-    !date &&
-    !status
-  ) {
+  if (!title && !smallDescription && !description && !date && !status) {
     throw new ApiError(400, "All fields are empty");
   }
 
@@ -124,36 +116,36 @@ const deleteBlog = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, "Event deleted successfully"));
 });
 
-// const deleteImage = asyncHandler(async (req, res) => {
-//   const event = await Blogs.findById(req.query.id);
-//   const { index } = req.body;
+export const deleteImage = asyncHandler(async (req, res) => {
+  const event = await Blogs.findById(req.query.id);
+  const { index } = req.body;
 
-//   if (!event) {
-//     throw new ApiError(400, "No event found!!!");
-//   }
+  if (!event) {
+    throw new ApiError(400, "No event found!!!");
+  }
 
-//   if (!index) {
-//     throw new ApiError(400, "Index is required!!!");
-//   }
+  if (!index) {
+    throw new ApiError(400, "Index is required!!!");
+  }
 
-//   const images = event.images;
-//   if (images.length <= 1) {
-//     throw new ApiError(400, "Images can not be 0, add more images to delete.");
-//   }
+  const images = event.images;
+  if (images.length <= 1) {
+    throw new ApiError(400, "Images can not be 0, add more images to delete.");
+  }
 
-//   images.splice(index, 1);
-//   const updatedEvent = await Blogs.findByIdAndUpdate(
-//     req.query.id,
-//     { $set: { images } },
-//     { new: true }
-//   );
+  images.splice(index, 1);
+  const updatedEvent = await Blogs.findByIdAndUpdate(
+    req.query.id,
+    { $set: { images } },
+    { new: true }
+  );
 
-//   if (!updatedEvent) {
-//     throw new ApiError(500, "Something went while updating the event!!!");
-//   }
+  if (!updatedEvent) {
+    throw new ApiError(500, "Something went while updating the event!!!");
+  }
 
-//   res.status(200).json(new ApiResponse(200, "Image deleted.", updatedEvent));
-// });
+  res.status(200).json(new ApiResponse(200, "Image deleted.", updatedEvent));
+});
 
 // const addImages = asyncHandler(async (req, res) => {
 //   const event = await Blogs.findById(req.query.id);
@@ -208,10 +200,7 @@ const blockBlog = asyncHandler(async (req, res) => {
 
   const updatedBlog = await blogs.save();
   if (!updatedBlog) {
-    throw new ApiError(
-      500,
-      "Something went wrong while blocking the blogs!!!"
-    );
+    throw new ApiError(500, "Something went wrong while blocking the blogs!!!");
   }
 
   res.status(200).json(
@@ -222,7 +211,7 @@ const blockBlog = asyncHandler(async (req, res) => {
 });
 
 // Unblock Testimonial function
-const unblockBlog= asyncHandler(async (req, res) => {
+const unblockBlog = asyncHandler(async (req, res) => {
   const { id } = req.query;
 
   const blogs = await Blogs.findById(id);
@@ -272,15 +261,10 @@ const updateImage = asyncHandler(async (req, res) => {
   );
 
   if (!updatedAward) {
-    throw new ApiError(
-      500,
-      "Something went wrong while updating the blogs!!!"
-    );
+    throw new ApiError(500, "Something went wrong while updating the blogs!!!");
   }
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, "Blog found", updatedAward));
+  return res.status(200).json(new ApiResponse(200, "Blog found", updatedAward));
 });
 
 const addImages = asyncHandler(async (req, res) => {
@@ -328,19 +312,22 @@ const updateImages = asyncHandler(async (req, res) => {
   if (!blog) {
     throw new ApiError(400, "No such blog exists!!!");
   }
- const images = [];
+  const images = [];
 
- if (req.files?.images.length === 0) {
-   throw new ApiError(400, "Images are requried");
- }
+  if (req.files?.images.length === 0) {
+    throw new ApiError(400, "Images are requried");
+  }
 
- for (let i = 0; i < req.files.images.length; i++) {
-   const image = await uploadOnCloudinary(req.files.images[i].path);
-   if (!image) {
-     throw new ApiError(500, "Something went wrong while uploading the images");
-   }
-   images.push(image.url);
- }
+  for (let i = 0; i < req.files.images.length; i++) {
+    const image = await uploadOnCloudinary(req.files.images[i].path);
+    if (!image) {
+      throw new ApiError(
+        500,
+        "Something went wrong while uploading the images"
+      );
+    }
+    images.push(image.url);
+  }
 
   if (images.length === 0) {
     throw new ApiError(500, "Something went wrong while uploading the images");
@@ -387,5 +374,5 @@ export {
   //   deleteEvent,
   //   getAllBlogs,
   //   deleteImage,
-    addImages,
+  addImages,
 };
