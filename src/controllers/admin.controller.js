@@ -149,6 +149,7 @@ const loginAdmin = asyncHandler(async (req, res) => {
   const options = {
     httpOnly: true,
     secure: true,
+    sameSite: "None",
   };
 
   return res
@@ -180,6 +181,7 @@ const logoutAdmin = asyncHandler(async (req, res) => {
   const options = {
     httpOnly: true,
     secure: true,
+    sameSite: "None",
   };
 
   return res
@@ -237,16 +239,11 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 });
 
 const changeCurrentPassword = asyncHandler(async (req, res) => {
-  const { oldPassword, newPassword } = req.body;
+  const { password } = req.body;
 
-  const admin = await Admin.findById(req.admin?._id);
-  const isPasswordCorrect = await admin.isPasswordCorrect(oldPassword);
+  const admin = await Admin.findById(req.query.id);
 
-  if (!isPasswordCorrect) {
-    throw new ApiError(400, "Invalid old password");
-  }
-
-  admin.password = newPassword;
+  admin.password = password;
   await admin.save({ validateBeforeSave: false });
 
   return res
@@ -284,14 +281,19 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
   ) {
     throw new ApiError(400, "All fields are empty");
   }
+  console.log(req.body);
 
   const admin = await Admin.findByIdAndUpdate(
-    req.admin?._id,
+    req.query.id,
     {
       $set: req.body,
     },
     { new: true }
   ).select("-password");
+
+  if (!admin) {
+    throw new ApiError(500, "Something went wrong while updating the admin!!!");
+  }
 
   return res
     .status(200)
@@ -319,6 +321,16 @@ const deleteAccount = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "Admin removed successfully."));
 });
 
+const getAllAdmin = asyncHandler(async (req, res) => {
+  const admins = await Admin.find();
+  if (!admins) {
+    throw new ApiError(500, "Something went wrong while fetching the admin!!!");
+  }
+  res
+    .status(200)
+    .json(new ApiResponse(200, "Admins fetched successfully!!!", admins));
+});
+
 export {
   registerAdmin,
   loginAdmin,
@@ -328,4 +340,5 @@ export {
   getCurrentAdmin,
   updateAccountDetails,
   deleteAccount,
+  getAllAdmin,
 };
