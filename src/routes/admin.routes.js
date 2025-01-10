@@ -8,6 +8,7 @@ import {
   registerAdmin,
   updateAccountDetails,
   deleteAccount,
+  getAllAdmin,
 } from "../controllers/admin.controller.js";
 import { verifyJwt } from "../middlewares/auth.middleware.js";
 
@@ -23,5 +24,6 @@ router.route("/change-password").post(verifyJwt, changeCurrentPassword);
 router.route("/get-admin").get(verifyJwt, getCurrentAdmin);
 router.route("/update-admin").post(verifyJwt, updateAccountDetails);
 router.route("/delete-admin").get(verifyJwt, deleteAccount);
+router.route("/get-all").get(verifyJwt, getAllAdmin);
 
 export default router;

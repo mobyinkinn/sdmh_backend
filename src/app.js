@@ -6,7 +6,6 @@ const app = e();
 
 app.use(
   cors({
-    // origin: process.env.CORS_ORIGIN,
     credentials: true,
     origin: true,
   })
@@ -36,7 +35,7 @@ import tipsRouter from "./routes/tips.route.js";
 import testimonialRouter from "./routes/testimonial.route.js";
 import checkupRouter from "./routes/checkup.route.js";
 import bannerRouter from "./routes/banner.route.js";
-import blogsRouter from "./routes/blogs.route.js"
+import blogsRouter from "./routes/blogs.route.js";
 //routes declaration
 app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/department", departmentRouter);
