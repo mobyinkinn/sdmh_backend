@@ -152,8 +152,12 @@ const addImages = asyncHandler(async (req, res) => {
     throw new ApiError(400, "No event found!!!");
   }
 
-  const existingImages = event.images.length;
-  const incomingImages = req.files.images.length;
+  const existingImages = event.images?.length;
+
+  if (!req.files) {
+    throw new ApiError(400, "No images found to add!!!");
+  }
+  const incomingImages = req.files.images?.length;
 
   if (existingImages + incomingImages > 6) {
     throw new ApiError(

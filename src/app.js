@@ -6,6 +6,7 @@ const app = e();
 
 app.use(
   cors({
+    origin: process.env.CORS_ORIGIN,
     credentials: true,
     origin: true,
   })
@@ -46,6 +47,7 @@ app.use("/api/v1/events", eventRouter);
 app.use("/api/v1/blogs", blogsRouter);
 app.use("/api/v1/downloadables", downloadableRouter);
 app.use("/api/v1/notices", noticeRouter);
+app.use("/api/v1/pages", pagesRouter);
 app.use("/api/v1/awards", awardsRouter);
 app.use("/api/v1/enquiry", enquiryRouter);
 app.use("/api/v1/contact", contactRouter);

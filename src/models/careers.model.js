@@ -12,6 +12,21 @@ const careerSchema = new Schema(
       required: true,
       trim: true,
     },
+    ctc: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    designation: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    experience: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     email: {
       type: String,
       required: true,
@@ -34,11 +49,6 @@ const careerSchema = new Schema(
     },
     dateApplied: {
       type: String,
-      required: true,
-      trim: true,
-    },
-    status: {
-      type: Boolean,
       required: true,
       trim: true,
     },
