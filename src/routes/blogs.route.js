@@ -12,6 +12,7 @@ import {
   updateBlog,
   updateImage,
   updateImages,
+  deleteImage,
 } from "../controllers/blogs.controller.js";
 // import {
 //   createEvents,
@@ -20,6 +21,7 @@ import {
 //   deleteEvent,
 //   deleteImage,
 //   addImages,
+
 // } from "../controllers/events.controllers.js";
 
 const router = Router();
@@ -59,7 +61,7 @@ router.route("/update-images").post(
   updateImages
 );
 
-// router.route("/delete-image").post(verifyJwt, deleteImage);
+router.route("/delete-image").post(verifyJwt, deleteImage);
 router
   .route("/add-images")
   .post(verifyJwt, upload.fields([{ name: "images", maxCount: 5 }]), addImages);
