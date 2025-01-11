@@ -12,7 +12,7 @@ const router = Router();
 
 router.route("/create").post(verifyJwt, createVideo);
 router.route("/update").post(verifyJwt, updateVideo);
-router.route("/delete").post(verifyJwt, deleteVideo);
+router.route("/delete").get(verifyJwt, deleteVideo);
 router.route("/get-all").get(getAllVideos);
 
 export default router;

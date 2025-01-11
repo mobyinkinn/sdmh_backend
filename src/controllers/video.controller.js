@@ -57,12 +57,12 @@ const updateVideo = asyncHandler(async (req, res) => {
 });
 
 const deleteVideo = asyncHandler(async (req, res) => {
-  const video = Video.findById(req.query.id);
+  const video = await Video.findById(req.query.id);
   if (!video) {
     throw new ApiError(400, "No video found!!!");
   }
 
-  const deletedVideo = Video.findByIdAndDelete(req.query.id);
+  const deletedVideo = await Video.findByIdAndDelete(req.query.id);
   if (!deletedVideo) {
     throw new ApiError(500, "Something went wrong while deleting the video!!!");
   }
