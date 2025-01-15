@@ -7,6 +7,7 @@ import {
   updateDepartment,
   updateImage,
   updateBanner,
+  getDepartmentByName,
 } from "../controllers/department.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJwt } from "../middlewares/auth.middleware.js";
@@ -30,6 +31,7 @@ router.route("/create").post(
 
 router.route("/get-all").get(getAllDepartments);
 router.route("/get").post(getDepartment);
+router.route("/getbyId").get( getDepartmentByName);
 router.route("/update").post(verifyJwt, updateDepartment);
 router.route("/delete").get(verifyJwt, deleteDepartment);
 router
