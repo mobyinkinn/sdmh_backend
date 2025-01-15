@@ -75,7 +75,32 @@ const createDepartment = asyncHandler(async (req, res) => {
       new ApiResponse(200, createdDepartment, "Department created successfully")
     );
 });
+const getDepartmentByName = asyncHandler(async (req, res) => {
+  if (!req.query.name) {
+    throw new ApiError(400, "Please provide the required name!!!");
+  }
 
+  const department = await Department.findOne({ name: req.query.name });
+
+  if (!department) {
+    throw new ApiError(400, "No Department found with the given name!!!");
+  }
+
+  res.status(200).json(new ApiResponse(200, "Department found", department));
+});
+
+// const getDepartmentById = asyncHandler(async (req, res) => {
+//   if (!req.query.id) {
+//     throw new ApiError(400, "Please provide the required id!!!");
+//   }
+//   const opening = await Department.findById(req.query.id);
+
+//   if (!opening) {
+//     throw new ApiError(400, "No Opening found!!!");
+//   }
+
+//   res.status(200).json(new ApiResponse(200, "Opening found", opening));
+// });
 const updateDepartment = asyncHandler(async (req, res) => {
   const { name, content, status } = req.body;
 
@@ -241,5 +266,6 @@ export {
   getDepartment,
   deleteDepartment,
   updateImage,
+  getDepartmentByName,
   updateBanner,
 };
