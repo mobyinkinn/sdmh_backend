@@ -1,7 +1,6 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { Pages } from "../models/pages.model.js";
 
 const createPage = asyncHandler(async (req, res) => {
@@ -21,15 +20,10 @@ const createPage = asyncHandler(async (req, res) => {
   });
 
   if (!page) {
-    throw new ApiError(
-      400,
-      "Something went wrong while creating the notice!!!"
-    );
+    throw new ApiError(400, "Something went wrong while creating the page!!!");
   }
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, page, "Pages created!!!"));
+  return res.status(200).json(new ApiResponse(200, page, "Pages created!!!"));
 });
 
 const getAllPages = asyncHandler(async (req, res) => {
@@ -42,15 +36,15 @@ const getAllPages = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, pages, "Pages sent!!!"));
 });
 
-const updateNotices = asyncHandler(async (req, res) => {
+const updatePage = asyncHandler(async (req, res) => {
   const { name, status } = req.body;
 
-  const isNotices = await Notices.findById(req.query.id);
-  if (!isNotices) {
-    throw new ApiError(400, "No such downloadable exists!!!");
+  const isPages = await Pages.findById(req.query.id);
+  if (!isPages) {
+    throw new ApiError(400, "No such page exists!!!");
   }
 
-  if (!name) {
+  if (!name && !status) {
     throw new ApiError(400, "All fields are empty");
   }
 
@@ -58,128 +52,32 @@ const updateNotices = asyncHandler(async (req, res) => {
   if (name) filter.name = name;
   if (status) filter.status = status;
 
-  const updatedNotice = await Notices.findByIdAndUpdate(req.query.id, filter, {
+  const updatedPage = await Pages.findByIdAndUpdate(req.query.id, filter, {
     new: true,
   });
 
-  if (!updatedNotice) {
-    throw new ApiError(500, "Something went wrong while updating Notice!!!");
+  if (!updatedPage) {
+    throw new ApiError(500, "Something went wrong while updating Page!!!");
   }
 
   return res
     .status(200)
-    .json(new ApiResponse(200, updatedNotice, "Notice updated!!!"));
+    .json(new ApiResponse(200, updatedPage, "Page updated!!!"));
 });
 
-const deleteNotice = asyncHandler(async (req, res) => {
-  const isNotice = await Notices.findById(req.query.id);
-  if (!isNotice) {
-    throw new ApiError(400, "No such notice exists!!!");
+const deletePage = asyncHandler(async (req, res) => {
+  const isPage = await Pages.findById(req.query.id);
+  if (!isPage) {
+    throw new ApiError(400, "No such Page exists!!!");
   }
 
-  const deleteNotice = await Notices.findByIdAndDelete(req.query.id);
+  const deletedPage = await Pages.findByIdAndDelete(req.query.id);
 
-  if (!deleteNotice) {
-    throw new ApiError(500, "Something went wrong while deleting Notice!!!");
+  if (!deletedPage) {
+    throw new ApiError(500, "Something went wrong while deleting Page!!!");
   }
 
-  return res.status(200).json(new ApiResponse(200, "Notice deleted!!!"));
+  return res.status(200).json(new ApiResponse(200, "Page deleted!!!"));
 });
 
-const updateFile = asyncHandler(async (req, res) => {
-  const id = req.query.id;
-  const isNotice = await Notices.findById(req.query.id);
-  if (!isNotice) {
-    throw new ApiError(400, "No such Notice exists!!!");
-  }
-
-  const fileLocalPath = req.files?.file[0]?.path;
-  if (!fileLocalPath) {
-    throw new ApiError(400, "File is required!!!");
-  }
-
-  const file = await uploadOnCloudinary(fileLocalPath);
-  if (!file) {
-    throw new ApiError(500, "Failed to upload file!!!");
-  }
-
-  const updatedEntry = await Notices.findByIdAndUpdate(
-    id,
-    {
-      file: file.url,
-    },
-    { new: true }
-  );
-
-  if (!updatedEntry) {
-    throw new ApiError(
-      500,
-      "Something went wroong while updating downloadables!!!"
-    );
-  }
-
-  res
-    .status(200)
-    .json(new ApiResponse(200, "File updated successfully!!!", updatedEntry));
-});
-const blockNotice = asyncHandler(async (req, res) => {
-  const { id } = req.query;
-
-  const notices = await Notices.findById(id);
-  if (!notices) {
-    throw new ApiError(400, "Notice not found!!!");
-  }
-
-  // Update the status to false (blocked)
-  notices.status = false;
-
-  const updatedNotice = await notices.save();
-  if (!updatedNotice) {
-    throw new ApiError(
-      500,
-      "Something went wrong while blocking the Notices!!!"
-    );
-  }
-
-  res.status(200).json(
-    new ApiResponse(200, "Notice blocked successfully!!!", {
-      Notice: updatedNotice,
-    })
-  );
-});
-
-// Unblock Testimonial function
-const unblockNotice = asyncHandler(async (req, res) => {
-  const { id } = req.query;
-
-  const notices = await Notices.findById(id);
-  if (!notices) {
-    throw new ApiError(400, "Notice not found!!!");
-  }
-
-  // Update the status to true (unblocked)
-  notices.status = true;
-
-  const updatedNotice = await notices.save();
-  if (!updatedNotice) {
-    throw new ApiError(
-      500,
-      "Something went wrong while unblocking the blog!!!"
-    );
-  }
-
-  res.status(200).json(
-    new ApiResponse(200, "blog unblocked successfully!!!", {
-      notice: updatedNotice,
-    })
-  );
-});
-export {
-  createPage,
-  getAllPages,
-  updateNotices,
-  deleteNotice,
-  updateFile,
-  blockNotice,
-  unblockNotice,
-};
+export { createPage, getAllPages, updatePage, deletePage };
