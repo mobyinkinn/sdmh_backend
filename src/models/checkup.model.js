@@ -7,6 +7,11 @@ const checkupSchema = new Schema(
       trim: true,
       required: true,
     },
+    price: {
+      type: Number,
+      trim: true,
+      required: true,
+    },
     image: {
       type: String,
       trim: true,
