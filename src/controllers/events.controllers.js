@@ -16,6 +16,16 @@ const createEvents = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Event already exists");
   }
 
+  const imageLocalPath = req.files?.image[0]?.path;
+  if (!imageLocalPath) {
+    throw new ApiError(400, "Image is required!!!");
+  }
+
+  const image = await uploadOnCloudinary(imageLocalPath);
+  if (!image) {
+    throw new ApiError(500, "Image failed to upload!!!");
+  }
+
   const images = [];
 
   if (req.files?.images.length === 0) {
@@ -45,6 +55,7 @@ const createEvents = asyncHandler(async (req, res) => {
     date,
     status: status || true,
     images: images,
+    image: image.url || undefined,
   });
 
   if (!event) {
@@ -191,6 +202,57 @@ const addImages = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, "Images added.", updatedEvent));
 });
 
+const updateImage = asyncHandler(async (req, res) => {
+  const event = await Events.findById(req.query.id);
+  if (!event) {
+    throw new ApiError(400, "No such event exists!!!");
+  }
+
+  const imageLocalPath = req.files?.image[0]?.path;
+
+  if (!imageLocalPath) {
+    throw new ApiError(400, "Image is required");
+  }
+
+  const image = await uploadOnCloudinary(imageLocalPath);
+
+  if (!image) {
+    throw new ApiError(500, "Image failed to upload");
+  }
+
+  const updatedEvent = await Events.findByIdAndUpdate(
+    req.query.id,
+    { image: image.url },
+    { new: true }
+  );
+
+  if (!updatedEvent) {
+    throw new ApiError(
+      500,
+      "Something went wrong while updating the events!!!"
+    );
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Event found", updatedEvent));
+});
+
+const getEventById = asyncHandler(async (req, res) => {
+  const { _id } = req.query;
+
+  if (!_id) {
+    throw new ApiError(400, "Event is required!!!");
+  }
+
+  const event = await Events.findOne({ _id });
+  if (!event) {
+    throw new ApiError(400, "No Event found");
+  }
+
+  res.status(200).json(new ApiResponse(200, "Event by id!!!", event));
+});
+
 export {
   createEvents,
   updateEvent,
@@ -198,4 +260,6 @@ export {
   getAllEvents,
   deleteImage,
   addImages,
+  updateImage,
+  getEventById,
 };

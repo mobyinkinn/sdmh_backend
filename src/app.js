@@ -38,6 +38,7 @@ import testimonialRouter from "./routes/testimonial.route.js";
 import checkupRouter from "./routes/checkup.route.js";
 import bannerRouter from "./routes/banner.route.js";
 import blogsRouter from "./routes/blogs.route.js";
+import navbarRouter from "./routes/navbar.route.js";
 //routes declaration
 app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/department", departmentRouter);
@@ -59,5 +60,6 @@ app.use("/api/v1/tips", tipsRouter);
 app.use("/api/v1/testimonials", testimonialRouter);
 app.use("/api/v1/checkup", checkupRouter);
 app.use("/api/v1/banner", bannerRouter);
+app.use("/api/v1/navbar", navbarRouter);
 
 export default app;

@@ -14,15 +14,6 @@ import {
   updateImages,
   deleteImage,
 } from "../controllers/blogs.controller.js";
-// import {
-//   createEvents,
-//   getAllEvents,
-//   updateEvent,
-//   deleteEvent,
-//   deleteImage,
-//   addImages,
-
-// } from "../controllers/events.controllers.js";
 
 const router = Router();
 
