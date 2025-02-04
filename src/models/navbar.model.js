@@ -16,6 +16,13 @@ const navbarSchema = new Schema(
       required: true,
       trim: true,
     },
+    items: [
+      {
+        subItemOrderId: { type: Number, required: true },
+        itemName: { type: String, required: true },
+        itemLink: { type: String, required: true },
+      },
+    ],
   },
   { timestamps: true }
 );

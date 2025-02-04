@@ -4,10 +4,21 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { Navbar } from "../models/navbar.model.js";
 
 const createNavbar = asyncHandler(async (req, res) => {
-  const { orderId, name, link } = req.body;
+  const { orderId, name, link, items } = req.body;
 
   if (!orderId || !name || !link) {
     throw new ApiError(400, "Please fill the required fields!!!");
+  }
+
+  if (items && Array.isArray(items)) {
+    for (const item of items) {
+      if (!item.subItemOrderId || !item.itemName || !item.itemLink) {
+        throw new ApiError(
+          400,
+          "Each item in the items array must have subItemOrderId, itemName, and itemLink"
+        );
+      }
+    }
   }
 
   const navbar = await Navbar.create(req.body);
@@ -29,9 +40,21 @@ const getAllNavbars = asyncHandler(async (req, res) => {
 });
 
 const updateNavbar = asyncHandler(async (req, res) => {
-  const { orderId, name, link } = req.body;
-  if (!name && !link && !orderId) {
-    throw new ApiError(400, "All fields are empty!!!");
+  const { orderId, name, link, items } = req.body;
+
+  if (!name && !link && !orderId && !items) {
+    throw new ApiError(400, "At least one field is required for update!!!");
+  }
+
+  if (items && Array.isArray(items)) {
+    for (const item of items) {
+      if (!item.subItemOrderId || !item.itemName || !item.itemLink) {
+        throw new ApiError(
+          400,
+          "Each item in the items array must have subItemOrderId, itemName, and itemLink"
+        );
+      }
+    }
   }
 
   const navbar = await Navbar.findById(req.query.id);

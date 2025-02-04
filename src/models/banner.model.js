@@ -6,6 +6,13 @@ const bannerSchema = new Schema(
       type: String,
       required: true,
     },
+    mobileBanner: {
+      type: String,
+      required: true,
+    },
+    link: {
+      type: String,
+    },
     page: {
       type: String,
       required: true,

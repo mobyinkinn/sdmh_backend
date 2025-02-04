@@ -20,6 +20,10 @@ router.route("/create").post(
       name: "banner",
       maxCount: 1,
     },
+    {
+      name: "mobileBanner",
+      maxCount: 1,
+    },
   ]),
   createBanner
 );
@@ -30,6 +34,10 @@ router.route("/update/").post(
   upload.fields([
     {
       name: "banner",
+      maxCount: 1,
+    },
+    {
+      name: "mobileBanner",
       maxCount: 1,
     },
   ]),

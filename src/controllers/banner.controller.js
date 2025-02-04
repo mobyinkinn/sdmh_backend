@@ -5,8 +5,9 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 const createBanner = asyncHandler(async (req, res) => {
-  const { page, status } = req.body;
-  console.log("Re",req.body)
+  const { page, status, link } = req.body;
+  console.log("Req Body:", req.body);
+
   if (!page) {
     throw new ApiError(400, "Page is required!!!");
   }
@@ -20,7 +21,6 @@ const createBanner = asyncHandler(async (req, res) => {
   if (!localBannerPath) {
     throw new ApiError(400, "Banner image is required!!!");
   }
-
   const bannerUrl = await uploadOnCloudinary(localBannerPath);
   if (!bannerUrl) {
     throw new ApiError(
@@ -29,7 +29,26 @@ const createBanner = asyncHandler(async (req, res) => {
     );
   }
 
-  const banner = await Banner.create({ page, banner: bannerUrl.url,status });
+  const localMobileBannerPath = req.files?.mobileBanner[0]?.path;
+  if (!localMobileBannerPath) {
+    throw new ApiError(400, "Mobile banner image is required!!!");
+  }
+  const mobileBannerUrl = await uploadOnCloudinary(localMobileBannerPath);
+  if (!mobileBannerUrl) {
+    throw new ApiError(
+      500,
+      "Something went wrong while uploading the mobile banner!!!"
+    );
+  }
+
+  const banner = await Banner.create({
+    page,
+    banner: bannerUrl.url,
+    mobileBanner: mobileBannerUrl.url,
+    link,
+    status,
+  });
+
   if (!banner) {
     throw new ApiError(
       500,
@@ -39,7 +58,7 @@ const createBanner = asyncHandler(async (req, res) => {
 
   res
     .status(200)
-    .json(new ApiResponse(200, "Banner created successfullly!!!", banner));
+    .json(new ApiResponse(200, "Banner created successfully!!!", banner));
 });
 
 const getAllBanners = asyncHandler(async (req, res) => {
@@ -73,6 +92,7 @@ const getBannerByPage = asyncHandler(async (req, res) => {
 
 const updateBanner = asyncHandler(async (req, res) => {
   const { page } = req.query;
+  const { link } = req.body;
 
   if (!page) {
     throw new ApiError(400, "Page is required!!!");
@@ -80,33 +100,53 @@ const updateBanner = asyncHandler(async (req, res) => {
 
   const banner = await Banner.findOne({ page });
   if (!banner) {
-    throw new ApiError(400, "No banner found");
+    throw new ApiError(404, "No banner found for this page!!!");
   }
 
-  const localBannerPath = req.files?.banner[0]?.path;
-  if (!localBannerPath) {
-    throw new ApiError(400, "Banner image is required!!!");
+  const updateFields = {};
+
+  if (req.files?.banner) {
+    const localBannerPath = req.files.banner[0]?.path;
+    if (localBannerPath) {
+      const bannerUrl = await uploadOnCloudinary(localBannerPath);
+      if (!bannerUrl) {
+        throw new ApiError(
+          500,
+          "Something went wrong while uploading the banner!!!"
+        );
+      }
+      updateFields.banner = bannerUrl.url;
+    }
   }
 
-  const bannerUrl = await uploadOnCloudinary(localBannerPath);
-  if (!bannerUrl) {
-    throw new ApiError(
-      500,
-      "Something went wrong while uploading the banner!!!"
-    );
+  if (req.files?.mobileBanner) {
+    const localMobileBannerPath = req.files.mobileBanner[0]?.path;
+    if (localMobileBannerPath) {
+      const mobileBannerUrl = await uploadOnCloudinary(localMobileBannerPath);
+      if (!mobileBannerUrl) {
+        throw new ApiError(
+          500,
+          "Something went wrong while uploading the mobile banner!!!"
+        );
+      }
+      updateFields.mobileBanner = mobileBannerUrl.url;
+    }
+  }
+
+  if (link) {
+    updateFields.link = link;
   }
 
   const updatedBanner = await Banner.findByIdAndUpdate(
     banner._id,
-    {
-      $set: { banner: bannerUrl.url },
-    },
+    { $set: updateFields },
     { new: true }
   );
+
   if (!updatedBanner) {
     throw new ApiError(
       500,
-      "Something went wrong while creating the banner!!!"
+      "Something went wrong while updating the banner!!!"
     );
   }
 
@@ -139,6 +179,7 @@ const deleteBanner = asyncHandler(async (req, res) => {
 
   res.status(200).json(new ApiResponse(200, "Banner deleted successfully!!!"));
 });
+
 const blockBanner = asyncHandler(async (req, res) => {
   const { id } = req.query;
 
@@ -158,13 +199,11 @@ const blockBanner = asyncHandler(async (req, res) => {
     );
   }
 
-  res
-    .status(200)
-    .json(
-      new ApiResponse(200, "Banner blocked successfully!!!", {
-        Banner: updatedBanner,
-      })
-    );
+  res.status(200).json(
+    new ApiResponse(200, "Banner blocked successfully!!!", {
+      Banner: updatedBanner,
+    })
+  );
 });
 
 // Unblock Banner function
@@ -187,13 +226,11 @@ const unblockBanner = asyncHandler(async (req, res) => {
     );
   }
 
-  res
-    .status(200)
-    .json(
-      new ApiResponse(200, "Banner unblocked successfully!!!", {
-        Banner: updatedBanner,
-      })
-    );
+  res.status(200).json(
+    new ApiResponse(200, "Banner unblocked successfully!!!", {
+      Banner: updatedBanner,
+    })
+  );
 });
 export {
   createBanner,
@@ -202,5 +239,5 @@ export {
   updateBanner,
   deleteBanner,
   blockBanner,
-  unblockBanner
+  unblockBanner,
 };
