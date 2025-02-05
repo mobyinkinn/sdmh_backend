@@ -99,4 +99,25 @@ const deleteNavbar = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, "Navbar deleted successfully"));
 });
 
-export { getAllNavbars, createNavbar, updateNavbar, deleteNavbar };
+const getNavbarById = asyncHandler(async (req, res) => {
+  const { _id } = req.query;
+
+  if (!_id) {
+    throw new ApiError(400, "Navbar is required!!!");
+  }
+
+  const navbar = await Navbar.findOne({ _id });
+  if (!navbar) {
+    throw new ApiError(400, "No navbar found");
+  }
+
+  res.status(200).json(new ApiResponse(200, "navbar by id!!!", navbar));
+});
+
+export {
+  getAllNavbars,
+  createNavbar,
+  updateNavbar,
+  deleteNavbar,
+  getNavbarById,
+};
