@@ -6,44 +6,47 @@ import { Department } from "../models/department.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 const createDoctor = asyncHandler(async (req, res) => {
-  const {
-    name,
-    department,
-    designation,
-    availablity,
-    floor,
-    room,
-    about,
-    status,
-  } = req.body;
+  const { name, department, designation, floor, room, about, status } =
+    req.body;
+
+  const availability = JSON.parse(req.body.availability);
 
   if (
     !name ||
     !department ||
     !designation ||
-    !availablity ||
+    !availability ||
+    typeof availability !== "object" ||
     !about ||
     !status
   ) {
     throw new ApiError(400, "Please fill the required fields!!!");
   }
 
-  const imageLocalPath = req.files?.image[0]?.path;
+  // Validate availability structure
+  for (const day in availability) {
+    if (
+      typeof availability[day] !== "object" ||
+      typeof availability[day].OT !== "boolean" ||
+      typeof availability[day].OPD !== "boolean"
+    ) {
+      throw new ApiError(400, `Invalid availability format for ${day}`);
+    }
+  }
 
+  const imageLocalPath = req.files?.image?.[0]?.path;
   if (!imageLocalPath) {
     throw new ApiError(400, "Image is required!!!");
   }
 
   const image = await uploadOnCloudinary(imageLocalPath);
-
   if (!image) {
     throw new ApiError(500, "Image failed to upload!!!");
   }
 
   const fetchedDepartment = await Department.findOne({ name: department });
-
   if (!fetchedDepartment) {
-    throw new ApiError(400, "No such departments exist!!!");
+    throw new ApiError(400, "No such department exists!!!");
   }
 
   const doctor = await Doctor.create({
@@ -51,7 +54,7 @@ const createDoctor = asyncHandler(async (req, res) => {
     image: image.url,
     department: fetchedDepartment._id,
     designation,
-    availablity,
+    availability,
     floor: floor ?? undefined,
     room: room ?? undefined,
     about,

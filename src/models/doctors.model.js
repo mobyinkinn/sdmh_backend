@@ -22,8 +22,18 @@ const doctorSchema = new Schema(
       required: true,
       trim: true,
     },
-    availablity: {
-      type: [String],
+    availability: {
+      type: Map,
+      of: new Schema({
+        OT: {
+          type: Boolean,
+          required: true,
+        },
+        OPD: {
+          type: Boolean,
+          required: true,
+        },
+      }),
       required: true,
     },
     floor: {
