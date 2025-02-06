@@ -136,4 +136,26 @@ const deleteAward = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "Award deleted successfully!!!"));
 });
 
-export { createAward, getAllAwards, updateAward, updateImage, deleteAward };
+const getAwardById = asyncHandler(async (req, res) => {
+  const { _id } = req.query;
+
+  if (!_id) {
+    throw new ApiError(400, "Award is required!!!");
+  }
+
+  const award = await Awards.findOne({ _id });
+  if (!award) {
+    throw new ApiError(400, "No Award found");
+  }
+
+  res.status(200).json(new ApiResponse(200, "Award by id!!!", award));
+});
+
+export {
+  createAward,
+  getAllAwards,
+  updateAward,
+  updateImage,
+  deleteAward,
+  getAwardById,
+};

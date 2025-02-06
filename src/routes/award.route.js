@@ -5,6 +5,7 @@ import {
   updateAward,
   updateImage,
   deleteAward,
+  getAwardById,
 } from "../controllers/awards.controller.js";
 import { verifyJwt } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
@@ -34,5 +35,6 @@ router.route("/update-image").post(
   updateImage
 );
 router.route("/delete").get(verifyJwt, deleteAward);
+router.route("/get-by-id").get(verifyJwt, getAwardById);
 
 export default router;
