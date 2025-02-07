@@ -26,6 +26,21 @@ const awardsSchema = new Schema(
       type: Boolean,
       required: true,
     },
+    smallDescription: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    images: {
+      type: [String],
+      required: true,
+      trim: true,
+    },
+    bannerImage: {
+      type: String,
+      trim: true,
+      required: true,
+    },
   },
   { timestamps: true }
 );
