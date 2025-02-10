@@ -251,6 +251,37 @@ const updateBanner = asyncHandler(async (req, res) => {
     );
 });
 
+const deleteImage = asyncHandler(async (req, res) => {
+  const award = await Awards.findById(req.query.id);
+  const { index } = req.body;
+
+  if (!award) {
+    throw new ApiError(400, "No award found!!!");
+  }
+
+  if (!index) {
+    throw new ApiError(400, "Index is required!!!");
+  }
+
+  const images = award.images;
+  if (images.length <= 1) {
+    throw new ApiError(400, "Images can not be 0, add more images to delete.");
+  }
+
+  images.splice(index, 1);
+  const updatedImage = await Awards.findByIdAndUpdate(
+    req.query.id,
+    { $set: { images } },
+    { new: true }
+  );
+
+  if (!updatedImage) {
+    throw new ApiError(500, "Something went while updating the event!!!");
+  }
+
+  res.status(200).json(new ApiResponse(200, "Image deleted.", updatedImage));
+});
+
 export {
   createAward,
   getAllAwards,
@@ -260,4 +291,5 @@ export {
   getAwardById,
   updateImages,
   updateBanner,
+  deleteImage,
 };

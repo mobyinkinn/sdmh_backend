@@ -8,6 +8,7 @@ import {
   getAwardById,
   updateImages,
   updateBanner,
+  deleteImage,
 } from "../controllers/awards.controller.js";
 import { verifyJwt } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
@@ -18,7 +19,7 @@ router.route("/create").post(
   verifyJwt,
   upload.fields([
     { name: "image", maxCount: 1 },
-    { name: "images", maxCount: 6 },
+    { name: "images", maxCount: 4 },
     { name: "banner", maxCount: 1 },
   ]),
   createAward
@@ -38,11 +39,13 @@ router.route("/update-images").post(
   upload.fields([
     {
       name: "images",
-      maxCount: 6,
+      maxCount: 4,
     },
   ]),
   updateImages
 );
+
+router.route("/delete-image").post(verifyJwt, deleteImage);
 
 router
   .route("/update-banner")
