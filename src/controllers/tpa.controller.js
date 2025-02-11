@@ -5,9 +5,9 @@ import { Tpa } from "../models/tpa.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 const createTpa = asyncHandler(async (req, res) => {
-  const { name, status } = req.body;
+  const { name, status, tag } = req.body;
 
-  if (!name || !status) {
+  if (!name || !status || !tag) {
     throw new ApiError(400, "Please fill the required fields!!!");
   }
 
@@ -16,7 +16,6 @@ const createTpa = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Tpa already exists");
   }
 
-  console.log(req.files);
   const imageLocalPath = req.files?.logo[0]?.path;
 
   if (!imageLocalPath) {
@@ -32,6 +31,7 @@ const createTpa = asyncHandler(async (req, res) => {
   const tpa = await Tpa.create({
     name,
     status,
+    tag,
     logo: logo.url,
   });
 
@@ -47,7 +47,7 @@ const getAllTpas = asyncHandler(async (req, res) => {
 });
 
 const updateTpa = asyncHandler(async (req, res) => {
-  const { name, status } = req.body;
+  const { name, status, tag } = req.body;
 
   if (!req.query.id) {
     throw new ApiError(400, "Please provide the tpa id");

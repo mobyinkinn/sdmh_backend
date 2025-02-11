@@ -27,6 +27,11 @@ const checkupSchema = new Schema(
       trim: true,
       required: true,
     },
+    shortdescription: {
+      type: String,
+      trim: true,
+      required: true,
+    },
     status: {
       type: Boolean,
       trim: true,

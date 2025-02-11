@@ -6,33 +6,29 @@ import { Department } from "../models/department.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 const createDoctor = asyncHandler(async (req, res) => {
-  const { name, department, designation, floor, room, about, status } =
-    req.body;
-
-  const availability = JSON.parse(req.body.availability);
+  const {
+    name,
+    department,
+    designation,
+    floor,
+    room,
+    about,
+    status,
+    availablity,
+  } = req.body;
 
   if (
     !name ||
     !department ||
     !designation ||
-    !availability ||
-    typeof availability !== "object" ||
+    !availablity ||
     !about ||
     !status
   ) {
     throw new ApiError(400, "Please fill the required fields!!!");
   }
 
-  // Validate availability structure
-  for (const day in availability) {
-    if (
-      typeof availability[day] !== "object" ||
-      typeof availability[day].OT !== "boolean" ||
-      typeof availability[day].OPD !== "boolean"
-    ) {
-      throw new ApiError(400, `Invalid availability format for ${day}`);
-    }
-  }
+  
 
   const imageLocalPath = req.files?.image?.[0]?.path;
   if (!imageLocalPath) {
@@ -54,7 +50,7 @@ const createDoctor = asyncHandler(async (req, res) => {
     image: image.url,
     department: fetchedDepartment._id,
     designation,
-    availability,
+    availablity,
     floor: floor ?? undefined,
     room: room ?? undefined,
     about,

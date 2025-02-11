@@ -7,6 +7,11 @@ const tpaSchema = new Schema(
       required: true,
       trim: true,
     },
+    tag: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     logo: {
       type: String,
       required: true,
