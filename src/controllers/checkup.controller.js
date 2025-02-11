@@ -30,6 +30,27 @@ const createCheckup = asyncHandler(async (req, res) => {
   }
   const banner = await uploadOnCloudinary(bannerLocalPath);
 
+  const images = [];
+
+  if (req.files?.images.length === 0) {
+    throw new ApiError(400, "Images are requried");
+  }
+
+  for (let i = 0; i < req.files.images.length; i++) {
+    const image = await uploadOnCloudinary(req.files.images[i].path);
+    if (!image) {
+      throw new ApiError(
+        500,
+        "Something went wrong while uploading the images"
+      );
+    }
+    images.push(image.url);
+  }
+
+  if (images.length === 0) {
+    throw new ApiError(500, "Something went wrong while uploading the images");
+  }
+
   const checkup = await Checkup.create({
     title,
     description,
@@ -38,6 +59,8 @@ const createCheckup = asyncHandler(async (req, res) => {
     shortdescription,
     image: image.url,
     bannerImage: banner.url,
+    images: images,
+    smallDescription: smallDescription,
   });
 
   if (!checkup) {
@@ -236,6 +259,81 @@ const getCheckupById = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, "Checkup by id!!!", checkup));
 });
 
+const updateImages = asyncHandler(async (req, res) => {
+  const healthCheckup = await Checkup.findById(req.query.id);
+  if (!healthCheckup) {
+    throw new ApiError(400, "No such checkup exists!!!");
+  }
+  const images = [];
+
+  if (req.files?.images.length === 0) {
+    throw new ApiError(400, "Images are requried");
+  }
+
+  for (let i = 0; i < req.files.images.length; i++) {
+    const image = await uploadOnCloudinary(req.files.images[i].path);
+    if (!image) {
+      throw new ApiError(
+        500,
+        "Something went wrong while uploading the images"
+      );
+    }
+    images.push(image.url);
+  }
+
+  if (images.length === 0) {
+    throw new ApiError(500, "Something went wrong while uploading the images");
+  }
+
+  const updatedCheckups = await Checkup.findByIdAndUpdate(
+    req.query.id,
+    { images: images },
+    { new: true }
+  );
+
+  if (!updatedCheckups) {
+    throw new ApiError(
+      500,
+      "Something went wrong while updating the Checkups!!!"
+    );
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Checkup images added", updatedCheckups));
+});
+
+const deleteImage = asyncHandler(async (req, res) => {
+  const checkup = await Checkup.findById(req.query.id);
+  const { index } = req.body;
+
+  if (!checkup) {
+    throw new ApiError(400, "No checkup found!!!");
+  }
+
+  if (!index) {
+    throw new ApiError(400, "Index is required!!!");
+  }
+
+  const images = checkup.images;
+  if (images.length <= 1) {
+    throw new ApiError(400, "Images can not be 0, add more images to delete.");
+  }
+
+  images.splice(index, 1);
+  const updatedImage = await Checkup.findByIdAndUpdate(
+    req.query.id,
+    { $set: { images } },
+    { new: true }
+  );
+
+  if (!updatedImage) {
+    throw new ApiError(500, "Something went while updating the checkup!!!");
+  }
+
+  res.status(200).json(new ApiResponse(200, "Image deleted.", updatedImage));
+});
+
 export {
   createCheckup,
   deleteCheckup,
@@ -246,4 +344,6 @@ export {
   blockCheckup,
   unblockCheckup,
   getCheckupById,
+  updateImages,
+  deleteImage,
 };

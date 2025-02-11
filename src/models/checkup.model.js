@@ -22,6 +22,11 @@ const checkupSchema = new Schema(
       trim: true,
       required: true,
     },
+    smallDescription: {
+      type: String,
+      trim: true,
+      required: true,
+    },
     description: {
       type: String,
       trim: true,
@@ -36,6 +41,11 @@ const checkupSchema = new Schema(
       type: Boolean,
       trim: true,
       required: true,
+    },
+    images: {
+      type: [String],
+      required: true,
+      trim: true,
     },
   },
   { timestamps: true }

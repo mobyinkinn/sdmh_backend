@@ -11,6 +11,8 @@ import {
   blockCheckup,
   unblockCheckup,
   getCheckupById,
+  updateImages,
+  deleteImage,
 } from "../controllers/checkup.controller.js";
 
 const router = Router();
@@ -26,6 +28,7 @@ router.route("/create").post(
       name: "banner",
       maxCount: 1,
     },
+    { name: "images", maxCount: 4 },
   ]),
   createCheckup
 );
@@ -44,9 +47,20 @@ router
     upload.fields([{ name: "banner", maxCount: 1 }]),
     updateBanner
   );
+
+router.route("/update-images").post(
+  verifyJwt,
+  upload.fields([
+    {
+      name: "images",
+      maxCount: 4,
+    },
+  ]),
+  updateImages
+);
+router.route("/delete-image").post(verifyJwt, deleteImage);
 router.route("/delete").get(verifyJwt, deleteCheckup);
 router.route("/get-all").get(getAllCheckups);
-
 router.route("/block-checkup").patch(verifyJwt, blockCheckup);
 router.route("/unblock-checkup").patch(verifyJwt, unblockCheckup);
 router.route("/get-by-id").get(verifyJwt, getCheckupById);
