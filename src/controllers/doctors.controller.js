@@ -15,12 +15,14 @@ const createDoctor = asyncHandler(async (req, res) => {
     about,
     status,
     availablity,
+    experience,
   } = req.body;
 
   if (
     !name ||
     !department ||
     !designation ||
+    !experience ||
     !availablity ||
     !about ||
     !status
@@ -28,7 +30,26 @@ const createDoctor = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Please fill the required fields!!!");
   }
 
-  
+  // Convert availablity from string to object
+  let parsedAvailablity;
+  if (availablity) {
+    try {
+      parsedAvailablity =
+        typeof availablity === "string" ? JSON.parse(availablity) : availablity;
+
+      if (
+        typeof parsedAvailablity !== "object" ||
+        Array.isArray(parsedAvailablity)
+      ) {
+        throw new Error();
+      }
+    } catch (error) {
+      throw new ApiError(
+        400,
+        "Availability must be a valid JSON object with key-value pairs!!!"
+      );
+    }
+  }
 
   const imageLocalPath = req.files?.image?.[0]?.path;
   if (!imageLocalPath) {
@@ -50,7 +71,8 @@ const createDoctor = asyncHandler(async (req, res) => {
     image: image.url,
     department: fetchedDepartment._id,
     designation,
-    availablity,
+    experience,
+    availablity: parsedAvailablity, // Now correctly stored as an object
     floor: floor ?? undefined,
     room: room ?? undefined,
     about,
@@ -71,6 +93,7 @@ const updateDoctor = asyncHandler(async (req, res) => {
     name,
     department,
     designation,
+    experience,
     availablity,
     floor,
     room,
@@ -82,6 +105,7 @@ const updateDoctor = asyncHandler(async (req, res) => {
     !name &&
     !department &&
     !designation &&
+    !experience &&
     !availablity &&
     !floor &&
     !room &&
@@ -96,10 +120,51 @@ const updateDoctor = asyncHandler(async (req, res) => {
     throw new ApiError(400, "No such doctor exists!!!");
   }
 
+  // Convert availablity from string to object if provided
+  let parsedAvailablity;
+  if (availablity) {
+    try {
+      parsedAvailablity =
+        typeof availablity === "string" ? JSON.parse(availablity) : availablity;
+
+      if (
+        typeof parsedAvailablity !== "object" ||
+        Array.isArray(parsedAvailablity)
+      ) {
+        throw new Error();
+      }
+    } catch (error) {
+      throw new ApiError(
+        400,
+        "Availability must be a valid JSON object with key-value pairs!!!"
+      );
+    }
+  }
+
+  // Fetch department if provided
+  let fetchedDepartment;
+  if (department) {
+    fetchedDepartment = await Department.findOne({ name: department });
+    if (!fetchedDepartment) {
+      throw new ApiError(400, "No such department exists!!!");
+    }
+  }
+
+  const updateFields = {};
+  if (name) updateFields.name = name;
+  if (fetchedDepartment) updateFields.department = fetchedDepartment._id;
+  if (designation) updateFields.designation = designation;
+  if (experience) updateFields.experience = experience;
+  if (parsedAvailablity) updateFields.availablity = parsedAvailablity;
+  if (floor) updateFields.floor = floor;
+  if (room) updateFields.room = room;
+  if (about) updateFields.about = about;
+  if (status !== undefined) updateFields.status = status;
+
   const updatedDoctor = await Doctor.findByIdAndUpdate(
     req.query.id,
     {
-      $set: req.body,
+      $set: updateFields,
     },
     { new: true }
   );
@@ -110,7 +175,7 @@ const updateDoctor = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, "Doctor Updated Successfully", updatedDoctor));
+    .json(new ApiResponse(200, updatedDoctor, "Doctor Updated Successfully"));
 });
 
 const deleteDoctor = asyncHandler(async (req, res) => {

@@ -22,18 +22,22 @@ const doctorSchema = new Schema(
       required: true,
       trim: true,
     },
+    experience: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     availablity: {
-      type: [Object],
+      type: Map,
+      of: String,
       required: true,
     },
     floor: {
       type: String,
-      required: false,
       trim: true,
     },
     room: {
       type: String,
-      required: false,
       trim: true,
     },
     about: {
