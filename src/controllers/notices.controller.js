@@ -3,31 +3,39 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { Department } from "../models/department.model.js";
 
 const createNotice = asyncHandler(async (req, res) => {
-  const { name, status } = req.body;
-  if (!name) {
+  const { name, year, department, status } = req.body;
+
+  if (!name || !year || !department) {
     throw new ApiError(400, "Please fill the required fields!!!");
   }
 
-  const fileLocalPath = req.files.file[0]?.path;
+  const fileLocalPath = req.files?.file[0]?.path;
   if (!fileLocalPath) {
     throw new ApiError(400, "Please upload the file!!!");
   }
 
   const file = await uploadOnCloudinary(fileLocalPath);
-
   if (!file) {
     throw new ApiError(500, "Failed to upload the file, Please try again!!!");
   }
 
-  const exsisting = await Notices.find({ name });
-  if (exsisting.length > 1) {
+  const existing = await Notices.find({ name });
+  if (existing.length > 0) {
     throw new ApiError(400, "Entry already exists, please change the name!!!");
+  }
+
+  const fetchedDepartment = await Department.findOne({ name: department });
+  if (!fetchedDepartment) {
+    throw new ApiError(400, "No such department exists!!!");
   }
 
   const Notice = await Notices.create({
     name,
+    year,
+    department: fetchedDepartment._id,
     status,
     file: file.url,
   });
@@ -41,7 +49,7 @@ const createNotice = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, Notice, "Notice created!!!"));
+    .json(new ApiResponse(200, Notice, "Notice created successfully!!!"));
 });
 
 const getAllNotices = asyncHandler(async (req, res) => {
@@ -55,32 +63,46 @@ const getAllNotices = asyncHandler(async (req, res) => {
 });
 
 const updateNotices = asyncHandler(async (req, res) => {
-  const { name, status } = req.body;
+  const { name, year, department, status } = req.body;
 
   const isNotices = await Notices.findById(req.query.id);
   if (!isNotices) {
-    throw new ApiError(400, "No such downloadable exists!!!");
+    throw new ApiError(400, "No such notice exists!!!");
   }
 
-  if (!name) {
-    throw new ApiError(400, "All fields are empty");
+  if (!name && !year && !department && !status) {
+    throw new ApiError(400, "At least one field is required to update!!!");
   }
 
   const filter = {};
   if (name) filter.name = name;
+  if (year) filter.year = year;
   if (status) filter.status = status;
+
+  if (department) {
+    const fetchedDepartment = await Department.findOne({ name: department });
+    if (!fetchedDepartment) {
+      throw new ApiError(400, "No such department exists!!!");
+    }
+    filter.department = fetchedDepartment._id;
+  }
 
   const updatedNotice = await Notices.findByIdAndUpdate(req.query.id, filter, {
     new: true,
   });
 
   if (!updatedNotice) {
-    throw new ApiError(500, "Something went wrong while updating Notice!!!");
+    throw new ApiError(
+      500,
+      "Something went wrong while updating the notice!!!"
+    );
   }
 
   return res
     .status(200)
-    .json(new ApiResponse(200, updatedNotice, "Notice updated!!!"));
+    .json(
+      new ApiResponse(200, updatedNotice, "Notice updated successfully!!!")
+    );
 });
 
 const deleteNotice = asyncHandler(async (req, res) => {
@@ -134,6 +156,7 @@ const updateFile = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, "File updated successfully!!!", updatedEntry));
 });
+
 const blockNotice = asyncHandler(async (req, res) => {
   const { id } = req.query;
 
@@ -160,7 +183,6 @@ const blockNotice = asyncHandler(async (req, res) => {
   );
 });
 
-// Unblock Testimonial function
 const unblockNotice = asyncHandler(async (req, res) => {
   const { id } = req.query;
 

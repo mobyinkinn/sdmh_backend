@@ -72,7 +72,7 @@ const createDoctor = asyncHandler(async (req, res) => {
     department: fetchedDepartment._id,
     designation,
     experience,
-    availablity: parsedAvailablity, // Now correctly stored as an object
+    availablity: parsedAvailablity,
     floor: floor ?? undefined,
     room: room ?? undefined,
     about,
@@ -144,7 +144,7 @@ const updateDoctor = asyncHandler(async (req, res) => {
   // Fetch department if provided
   let fetchedDepartment;
   if (department) {
-    fetchedDepartment = await Department.findOne({ name: department });
+    fetchedDepartment = await Department.findOne({ _id: department });
     if (!fetchedDepartment) {
       throw new ApiError(400, "No such department exists!!!");
     }

@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const noticeSchema = new mongoose.Schema(
   {
@@ -7,7 +7,15 @@ const noticeSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-
+    year: {
+      type: Number,
+      required: true,
+    },
+    department: {
+      type: Schema.Types.ObjectId,
+      ref: "Department",
+      required: true,
+    },
     file: {
       type: String,
       required: true,
@@ -16,7 +24,6 @@ const noticeSchema = new mongoose.Schema(
     status: {
       type: Boolean,
       required: true,
-      trim: true,
     },
   },
   { timestamps: true }
