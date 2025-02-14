@@ -80,7 +80,7 @@ const updateNotices = asyncHandler(async (req, res) => {
   if (status) filter.status = status;
 
   if (department) {
-    const fetchedDepartment = await Department.findOne({ name: department });
+    const fetchedDepartment = await Department.findOne({ _id: department });
     if (!fetchedDepartment) {
       throw new ApiError(400, "No such department exists!!!");
     }
