@@ -2,6 +2,11 @@ import mongoose, { Schema } from "mongoose";
 
 const doctorSchema = new Schema(
   {
+    order: {
+      type: Number,
+      required: true,
+      trim: true,
+    },
     name: {
       type: String,
       required: true,

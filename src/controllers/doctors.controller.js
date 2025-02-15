@@ -7,6 +7,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 
 const createDoctor = asyncHandler(async (req, res) => {
   const {
+    order,
     name,
     department,
     designation,
@@ -19,6 +20,7 @@ const createDoctor = asyncHandler(async (req, res) => {
   } = req.body;
 
   if (
+    !order ||
     !name ||
     !department ||
     !designation ||
@@ -67,6 +69,7 @@ const createDoctor = asyncHandler(async (req, res) => {
   }
 
   const doctor = await Doctor.create({
+    order,
     name,
     image: image.url,
     department: fetchedDepartment._id,
@@ -90,6 +93,7 @@ const createDoctor = asyncHandler(async (req, res) => {
 
 const updateDoctor = asyncHandler(async (req, res) => {
   const {
+    order,
     name,
     department,
     designation,
@@ -102,6 +106,7 @@ const updateDoctor = asyncHandler(async (req, res) => {
   } = req.body;
 
   if (
+    !order &&
     !name &&
     !department &&
     !designation &&
@@ -151,6 +156,7 @@ const updateDoctor = asyncHandler(async (req, res) => {
   }
 
   const updateFields = {};
+  if (order) updateFields.order = order;
   if (name) updateFields.name = name;
   if (fetchedDepartment) updateFields.department = fetchedDepartment._id;
   if (designation) updateFields.designation = designation;
@@ -269,6 +275,27 @@ const updateImage = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "Doctor found", updatedDoctor));
 });
 
+const updateDoctorsOrder = asyncHandler(async (req, res) => {
+  const updatedOrder = req.body;
+
+  try {
+    // Loop through the updated order array and update each doctor's order in the database
+    for (const doctor of updatedOrder) {
+      await Doctor.findByIdAndUpdate(doctor.id, { order: doctor.order });
+    }
+
+    res.status(200).json({
+      status: "success",
+      message: "Doctors order updated successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "fail",
+      message: "An error occurred while updating doctors order.",
+    });
+  }
+});
+
 export {
   createDoctor,
   updateDoctor,
@@ -276,4 +303,5 @@ export {
   getAllDoctors,
   getDoctor,
   updateImage,
+  updateDoctorsOrder,
 };
