@@ -76,11 +76,11 @@ const createDepartment = asyncHandler(async (req, res) => {
     );
 });
 const getDepartmentByName = asyncHandler(async (req, res) => {
-  if (!req.query.name) {
+  if (!req.query.id) {
     throw new ApiError(400, "Please provide the required name!!!");
   }
 
-  const department = await Department.findOne({ name: req.query.name });
+  const department = await Department.findOne({ _id: req.query.id });
 
   if (!department) {
     throw new ApiError(400, "No Department found with the given name!!!");
