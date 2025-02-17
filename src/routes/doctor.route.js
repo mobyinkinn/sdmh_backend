@@ -6,6 +6,8 @@ import {
   updateDoctor,
   getDoctor,
   updateImage,
+  getDoctorByName,
+  getDoctorByID,
   updateDoctorsOrder,
 } from "../controllers/doctors.controller.js";
 import { verifyJwt } from "../middlewares/auth.middleware.js";
@@ -37,6 +39,10 @@ router.route("/update-image").post(
 router.route("/delete").get(verifyJwt, deleteDoctor);
 router.route("/get-all").get(getAllDoctors);
 router.route("/get").post(getDoctor);
+router.route("/getbyId").get(getDoctorByName);
+
+router.route("/getdoctorbyId").get(getDoctorByID);
+
 router.post("/update-doctors-order", updateDoctorsOrder);
 
 export default router;

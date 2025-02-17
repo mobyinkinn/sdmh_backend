@@ -27,8 +27,8 @@ router.route("/create").post(
   ]),
   createBanner
 );
-router.route("/get-all").get(verifyJwt, getAllBanners);
-router.route("/get-by-page").get(verifyJwt, getBannerByPage);
+router.route("/get-all").get(getAllBanners);
+router.route("/get-by-page").get(getBannerByPage);
 router.route("/update/").post(
   verifyJwt,
   upload.fields([
@@ -43,7 +43,7 @@ router.route("/update/").post(
   ]),
   updateBanner
 );
-router.route("/delete").get(deleteBanner);
+router.route("/delete").get(verifyJwt, deleteBanner);
 router.route("/block-banner").patch(verifyJwt, blockBanner);
 router.route("/unblock-banner").patch(verifyJwt, unblockBanner);
 

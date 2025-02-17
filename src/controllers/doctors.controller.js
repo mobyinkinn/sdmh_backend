@@ -217,7 +217,32 @@ const getAllDoctors = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, allDoctors, "Doctors sent successfully!!!"));
 });
+const getDoctorByName = asyncHandler(async (req, res) => {
+  if (!req.query.id) {
+    throw new ApiError(400, "Please provide the required name!!!");
+  }
 
+  const doctor = await Doctor.find({ department: req.query.id });
+
+  if (!doctor) {
+    throw new ApiError(400, "No Doctor found with the given name!!!");
+  }
+
+  res.status(200).json(new ApiResponse(200, "Doctor found", doctor));
+});
+const getDoctorByID = asyncHandler(async (req, res) => {
+  if (!req.query.id) {
+    throw new ApiError(400, "Please provide the required name!!!");
+  }
+
+  const doctor = await Doctor.findOne({ _id: req.query.id });
+
+  if (!doctor) {
+    throw new ApiError(400, "No Doctor found with the given name!!!");
+  }
+
+  res.status(200).json(new ApiResponse(200, "Doctor found", doctor));
+});
 const getDoctor = asyncHandler(async (req, res) => {
   const { id, name, department } = req.body;
 
@@ -303,5 +328,7 @@ export {
   getAllDoctors,
   getDoctor,
   updateImage,
+  getDoctorByName,
+  getDoctorByID,
   updateDoctorsOrder,
 };
