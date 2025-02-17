@@ -8,6 +8,7 @@ import {
   updateImage,
   getDoctorByName,
   getDoctorByID,
+  updateDoctorsOrder,
 } from "../controllers/doctors.controller.js";
 import { verifyJwt } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
@@ -42,5 +43,6 @@ router.route("/getbyId").get(getDoctorByName);
 
 router.route("/getdoctorbyId").get(getDoctorByID);
 
+router.post("/update-doctors-order", updateDoctorsOrder);
 
 export default router;
