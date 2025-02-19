@@ -5,8 +5,9 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 const createCheckup = asyncHandler(async (req, res) => {
-  const { title, status, description, price, shortdescription } = req.body;
-  if (!title || !description || !price || !shortdescription) {
+  const { title, status, description, price, smallDescription } = req.body;
+  console.log(req.body);
+  if (!title || !description || !price || !smallDescription) {
     throw new ApiError(400, "Please fill all the required fields!!!");
   }
 
@@ -56,7 +57,6 @@ const createCheckup = asyncHandler(async (req, res) => {
     description,
     status,
     price,
-    shortdescription,
     image: image.url,
     bannerImage: banner.url,
     images: images,
@@ -167,14 +167,14 @@ const updateBanner = asyncHandler(async (req, res) => {
 });
 
 const updateCheckup = asyncHandler(async (req, res) => {
-  const { title, status, price, description, shortdescription } = req.body;
+  const { title, status, price, description, smallDescription } = req.body;
 
   const available = await Checkup.findById(req.query.id);
   if (!available) {
     throw new ApiError(400, "Checkup not found!!!");
   }
 
-  if (!title && !description && !price && !shortdescription) {
+  if (!title && !description && !price && !smallDescription) {
     throw new ApiError(400, "All fields are empty!!!");
   }
 
