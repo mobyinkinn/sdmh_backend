@@ -5,9 +5,16 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { Events } from "../models/events.model.js";
 
 const createEvents = asyncHandler(async (req, res) => {
-  const { title, smallDescription, description, date, status, featured } =
+  const { title, smallDescription, description, date, status, featured, tag } =
     req.body;
-  if (!title || !smallDescription || !description || !date || !featured) {
+  if (
+    !title ||
+    !smallDescription ||
+    !description ||
+    !date ||
+    !featured ||
+    !tag
+  ) {
     throw new ApiError(400, "Please fill the required fields!!!");
   }
 
@@ -49,6 +56,7 @@ const createEvents = asyncHandler(async (req, res) => {
 
   const event = await Events.create({
     title,
+    tag,
     smallDescription,
     description,
     featured,
@@ -62,7 +70,7 @@ const createEvents = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Something went wrong while creating the event!!!");
   }
 
-  res.status(200).json(new ApiResponse(200, "Tpa created", event));
+  res.status(200).json(new ApiResponse(200, "Event created", event));
 });
 
 const getAllEvents = asyncHandler(async (req, res) => {
@@ -77,11 +85,12 @@ const getAllEvents = asyncHandler(async (req, res) => {
 });
 
 const updateEvent = asyncHandler(async (req, res) => {
-  const { title, smallDescription, description, date, status, featured } =
+  const { title, smallDescription, description, date, status, featured, tag } =
     req.body;
 
   if (
     !title &&
+    !tag &&
     !smallDescription &&
     !description &&
     !date &&
