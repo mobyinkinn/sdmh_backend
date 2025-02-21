@@ -42,6 +42,7 @@ import navbarRouter from "./routes/navbar.route.js";
 import opinionRouter from "./routes/opinion.route.js";
 import teachingRouter from "./routes/teaching.route.js";
 import newsletterRouter from "./routes/newsletter.route.js";
+import newspressRouter from "./routes/newspress.route.js";
 //routes declaration
 app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/department", departmentRouter);
@@ -67,5 +68,6 @@ app.use("/api/v1/navbar", navbarRouter);
 app.use("/api/v1/opinion", opinionRouter);
 app.use("/api/v1/teachings", teachingRouter);
 app.use("/api/v1/newsletter", newsletterRouter);
+app.use("/api/v1/newspress", newspressRouter);
 
 export default app;
