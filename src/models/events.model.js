@@ -7,6 +7,11 @@ const eventsSchema = new Schema(
       required: true,
       trim: true,
     },
+    tag: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     smallDescription: {
       type: String,
       required: true,
