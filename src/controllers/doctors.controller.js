@@ -204,7 +204,7 @@ const deleteDoctor = asyncHandler(async (req, res) => {
 });
 
 const getAllDoctors = asyncHandler(async (req, res) => {
-  const allDoctors = await Doctor.find();
+  const allDoctors = await Doctor.find().sort({ order: 1 });
 
   if (!allDoctors) {
     throw new ApiError(
@@ -217,38 +217,6 @@ const getAllDoctors = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, allDoctors, "Doctors sent successfully!!!"));
 });
-
-// const getAllDoctors = asyncHandler(async (req, res) => {
-//   const page = parseInt(req.query.page) || 1; // Default page = 1
-//   const limit = parseInt(req.query.limit) || 5; // Default limit = 10
-//   const skip = (page - 1) * limit;
-
-//   // Get total number of doctors
-//   const totalDoctor = await Doctor.countDocuments();
-
-//   // Fetch doctors with pagination
-//   const allDoctors = await Doctor.find().skip(skip).limit(limit);
-
-//   if (!allDoctors) {
-//     throw new ApiError(
-//       500,
-//       "Something went wrong while fetching the doctors!!!"
-//     );
-//   }
-
-//   return res.status(200).json(
-//     new ApiResponse(
-//       200,
-//       {
-//         totalDoctor, // Total number of doctors
-//         totalPages: Math.ceil(totalDoctor / limit), // Calculate total pages
-//         currentPage: page, // Current page
-//         data: allDoctors, // Paginated doctors list
-//       },
-//       "Doctors sent successfully!!!"
-//     )
-//   );
-// });
 
 const getDoctorByName = asyncHandler(async (req, res) => {
   if (!req.query.id) {
