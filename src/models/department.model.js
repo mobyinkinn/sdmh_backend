@@ -9,12 +9,12 @@ const departmentSchema = new Schema(
     },
     image: {
       type: String,
-      required: true,
+      // required: true,
       trim: true,
     },
     bannerImage: {
       type: String,
-      required: true,
+      // required: true,
       trim: true,
     },
     content: {

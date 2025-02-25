@@ -3,6 +3,8 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { Department } from "../models/department.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import csv from "csv-parser";
+import fs from "fs";
 
 const createDepartment = asyncHandler(async (req, res) => {
   /**
@@ -259,6 +261,70 @@ const updateBanner = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "Image updated!!!", updatedDepartment));
 });
 
+const importDepartments = asyncHandler(async (req, res) => {
+  const csvLocalPath = req.files?.csv[0]?.path;
+
+  if (!csvLocalPath) {
+    throw new ApiError(400, "Upload the file");
+  }
+
+  const requiredFields = ["name", "content"];
+  const booleanFields = ["status"];
+  const errors = [];
+  const results = [];
+
+  try {
+    await new Promise((resolve, reject) => {
+      fs.createReadStream(csvLocalPath)
+        .pipe(csv())
+        .on("data", (row) => {
+          const missingFields = requiredFields.filter((field) => !row[field]);
+
+          if (missingFields.length > 0) {
+            errors.push({
+              row,
+              error: `Missing fields: ${missingFields.join(", ")}`,
+            });
+            return;
+          }
+
+          // Default status to true if not provided
+          row["status"] =
+            row["status"] !== undefined
+              ? row["status"].toLowerCase() === "true"
+              : true;
+
+          results.push(row);
+        })
+        .on("end", resolve)
+        .on("error", reject);
+    });
+
+    const savedEntries = [];
+    for (const entry of results) {
+      const department = await Department.create(entry);
+      savedEntries.push(department);
+    }
+
+    fs.unlinkSync(csvLocalPath);
+
+    if (errors.length > 0) {
+      return res.status(400).json({
+        message: "Some required fields are missing",
+        errors,
+      });
+    }
+
+    res.status(200).json({
+      message: "Departments imported successfully",
+      data: savedEntries,
+    });
+  } catch (error) {
+    fs.unlinkSync(csvLocalPath); // Clean up uploaded file
+    return res.status(500).json({ message: "Error processing CSV", error });
+  }
+});
+
 export {
   createDepartment,
   getAllDepartments,
@@ -268,4 +334,5 @@ export {
   updateImage,
   getDepartmentByName,
   updateBanner,
+  importDepartments,
 };
