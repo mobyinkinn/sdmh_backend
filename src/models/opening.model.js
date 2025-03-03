@@ -7,23 +7,17 @@ const openingSchema = new Schema(
       required: true,
       trim: true,
     },
-
-    seats: {
+    category: {
       type: String,
       required: true,
       trim: true,
     },
-    lastDate: {
+    type: {
       type: String,
       required: true,
       trim: true,
     },
-    programmer: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    number: {
+    location: {
       type: String,
       required: true,
       trim: true,

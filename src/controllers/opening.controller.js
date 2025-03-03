@@ -4,19 +4,20 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 const createOpening = asyncHandler(async (req, res) => {
-  const { position, seats, lastDate, programmer, number, jd, status } =
-    req.body;
-console.log("re",req.body)
-  if (!position || !seats || !lastDate || !programmer || !number || !jd) {
+  console.log(req.body);
+  const { position, category, type, location, jd, status } = req.body;
+  console.log("re", req.body);
+  if (!position || !category || !type || !location || !jd) {
     throw new ApiError(400, "Please fill the required fields!!!");
   }
 
   const createdOpening = await Openings.create({
     position,
-    seats,
-    lastDate,
-    programmer,
-    number,jd,status
+    category,
+    type,
+    location,
+    jd,
+    status,
   });
   if (!createdOpening) {
     throw new ApiError(
@@ -54,8 +55,8 @@ const getOpeningById = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, "Opening found", opening));
 });
 const updateOpening = asyncHandler(async (req, res) => {
-  const { position, seats, lastDate, programmer, number, jd } = req.body;
-  if (!position && !seats && !lastDate && !programmer && !number && !jd) {
+  const { position, category, type, location, jd } = req.body;
+  if (!position && !category && !type && !location && !jd) {
     throw new ApiError(400, "All fields are empty!!!");
   }
 
@@ -98,7 +99,6 @@ const deleteOpening = asyncHandler(async (req, res) => {
 
   res.status(200).json(new ApiResponse(200, "Opening deleted!!!"));
 });
-
 
 const blockOpening = asyncHandler(async (req, res) => {
   const { id } = req.query;
