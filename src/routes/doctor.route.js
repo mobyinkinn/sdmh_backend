@@ -9,9 +9,11 @@ import {
   getDoctorByName,
   getDoctorByID,
   updateDoctorsOrder,
+  importDoctors,
 } from "../controllers/doctors.controller.js";
 import { verifyJwt } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
+import { uploadCsv } from "../middlewares/multerCsv.middleware.js";
 
 const router = Router();
 
@@ -44,5 +46,13 @@ router.route("/getbyId").get(getDoctorByName);
 router.route("/getdoctorbyId").get(getDoctorByID);
 
 router.post("/update-doctors-order", updateDoctorsOrder);
+
+router
+  .route("/import-doctors")
+  .post(
+    verifyJwt,
+    uploadCsv.fields([{ name: "csv", maxCount: 1 }]),
+    importDoctors
+  );
 
 export default router;

@@ -3,6 +3,8 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import csv from "csv-parser";
+import fs from "fs";
 
 const createDoctor = asyncHandler(async (req, res) => {
   const {
@@ -210,6 +212,7 @@ const getDoctorByName = asyncHandler(async (req, res) => {
 
   res.status(200).json(new ApiResponse(200, "Doctor found", doctor));
 });
+
 const getDoctorByID = asyncHandler(async (req, res) => {
   if (!req.query.id) {
     throw new ApiError(400, "Please provide the required name!!!");
@@ -223,6 +226,7 @@ const getDoctorByID = asyncHandler(async (req, res) => {
 
   res.status(200).json(new ApiResponse(200, "Doctor found", doctor));
 });
+
 const getDoctor = asyncHandler(async (req, res) => {
   const { id, name, department } = req.body;
 
@@ -302,6 +306,88 @@ const updateDoctorsOrder = asyncHandler(async (req, res) => {
   }
 });
 
+const importDoctors = asyncHandler(async (req, res) => {
+  const csvLocalPath = req.files?.csv[0]?.path;
+
+  if (!csvLocalPath) {
+    throw new ApiError(400, "Upload the file");
+  }
+
+  const fields = [
+    "name",
+    "department",
+    "designation",
+    "availablity",
+    "about",
+    "floor",
+    "room",
+    "status",
+    "order",
+  ];
+  const errors = [];
+  const results = [];
+
+  try {
+    await new Promise((resolve, reject) => {
+      fs.createReadStream(csvLocalPath)
+        .pipe(csv())
+        .on("data", (row) => {
+          // Ensure missing fields are replaced with defaults
+          fields.forEach((field) => {
+            if (!(field in row)) {
+              row[field] =
+                field === "order" ? -1 : field === "status" ? true : "";
+            }
+          });
+
+          // Convert availablity from string to object
+          let parsedAvailablity;
+          if (row.availablity) {
+            try {
+              parsedAvailablity =
+                typeof row.availablity === "string"
+                  ? JSON.parse(row.availablity)
+                  : row.availablity;
+
+              if (
+                typeof parsedAvailablity !== "object" ||
+                Array.isArray(parsedAvailablity)
+              ) {
+                throw new Error();
+              }
+            } catch (error) {
+              throw new ApiError(
+                400,
+                "Availability must be a valid JSON object with key-value pairs!!!"
+              );
+            }
+          }
+          row.availablity = parsedAvailablity;
+
+          results.push(row);
+        })
+        .on("end", resolve)
+        .on("error", reject);
+    });
+
+    const savedEntries = [];
+    for (const entry of results) {
+      const doctor = await Doctor.create(entry);
+      savedEntries.push(doctor);
+    }
+
+    fs.unlinkSync(csvLocalPath);
+
+    res.status(200).json({
+      message: "Doctors imported successfully",
+      data: savedEntries,
+    });
+  } catch (error) {
+    fs.unlinkSync(csvLocalPath);
+    return res.status(500).json({ message: "Error processing CSV", error });
+  }
+});
+
 export {
   createDoctor,
   updateDoctor,
@@ -312,4 +398,5 @@ export {
   getDoctorByName,
   getDoctorByID,
   updateDoctorsOrder,
+  importDoctors,
 };
