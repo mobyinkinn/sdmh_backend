@@ -2,7 +2,6 @@ import { Doctor } from "../models/doctors.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
-import { Department } from "../models/department.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 const createDoctor = asyncHandler(async (req, res) => {
@@ -16,7 +15,6 @@ const createDoctor = asyncHandler(async (req, res) => {
     about,
     status,
     availablity,
-    experience,
   } = req.body;
 
   if (
@@ -24,7 +22,6 @@ const createDoctor = asyncHandler(async (req, res) => {
     !name ||
     !department ||
     !designation ||
-    !experience ||
     !availablity ||
     !about ||
     !status
@@ -63,18 +60,12 @@ const createDoctor = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Image failed to upload!!!");
   }
 
-  const fetchedDepartment = await Department.findOne({ name: department });
-  if (!fetchedDepartment) {
-    throw new ApiError(400, "No such department exists!!!");
-  }
-
   const doctor = await Doctor.create({
     order,
     name,
     image: image.url,
-    department: fetchedDepartment._id,
+    department,
     designation,
-    experience,
     availablity: parsedAvailablity,
     floor: floor ?? undefined,
     room: room ?? undefined,
@@ -97,7 +88,6 @@ const updateDoctor = asyncHandler(async (req, res) => {
     name,
     department,
     designation,
-    experience,
     availablity,
     floor,
     room,
@@ -110,7 +100,6 @@ const updateDoctor = asyncHandler(async (req, res) => {
     !name &&
     !department &&
     !designation &&
-    !experience &&
     !availablity &&
     !floor &&
     !room &&
@@ -146,21 +135,11 @@ const updateDoctor = asyncHandler(async (req, res) => {
     }
   }
 
-  // Fetch department if provided
-  let fetchedDepartment;
-  if (department) {
-    fetchedDepartment = await Department.findOne({ _id: department });
-    if (!fetchedDepartment) {
-      throw new ApiError(400, "No such department exists!!!");
-    }
-  }
-
   const updateFields = {};
   if (order) updateFields.order = order;
   if (name) updateFields.name = name;
-  if (fetchedDepartment) updateFields.department = fetchedDepartment._id;
+  if (department) updateFields.department = department;
   if (designation) updateFields.designation = designation;
-  if (experience) updateFields.experience = experience;
   if (parsedAvailablity) updateFields.availablity = parsedAvailablity;
   if (floor) updateFields.floor = floor;
   if (room) updateFields.room = room;
