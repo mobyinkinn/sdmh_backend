@@ -9,6 +9,7 @@ import {
   updateBanner,
   getDepartmentByName,
   importDepartments,
+  updateMobileBanner,
 } from "../controllers/department.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJwt } from "../middlewares/auth.middleware.js";
@@ -25,6 +26,10 @@ router.route("/create").post(
     },
     {
       name: "bannerImage",
+      maxCount: 1,
+    },
+    {
+      name: "mobileBanner",
       maxCount: 1,
     },
   ]),
@@ -49,6 +54,14 @@ router
     verifyJwt,
     upload.fields([{ name: "banner", maxCount: 1 }]),
     updateBanner
+  );
+
+router
+  .route("/update-mobile-banner")
+  .post(
+    verifyJwt,
+    upload.fields([{ name: "mobileBanner", maxCount: 1 }]),
+    updateMobileBanner
   );
 
 router

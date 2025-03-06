@@ -43,15 +43,17 @@ const createDepartment = asyncHandler(async (req, res) => {
 
   const imageLocalPath = req.files?.image[0]?.path;
   const bannerImageLocalPath = req.files?.bannerImage[0].path;
+  const mobileBannerImageLocalPath = req.files?.mobileBanner[0].path;
 
-  if (!imageLocalPath || !bannerImageLocalPath) {
+  if (!imageLocalPath || !bannerImageLocalPath || !mobileBannerImageLocalPath) {
     throw new ApiError(400, "Images are required");
   }
 
   const image = await uploadOnCloudinary(imageLocalPath);
   const bannerImage = await uploadOnCloudinary(bannerImageLocalPath);
+  const mobileBanner = await uploadOnCloudinary(mobileBannerImageLocalPath);
 
-  if (!image || !bannerImage) {
+  if (!image || !bannerImage || !mobileBanner) {
     throw new ApiError(500, "Image failed to upload");
   }
 
@@ -59,6 +61,7 @@ const createDepartment = asyncHandler(async (req, res) => {
     name,
     image: image.url,
     bannerImage: bannerImage.url,
+    mobileBanner: mobileBanner.url,
     status,
     content,
   });
@@ -261,6 +264,50 @@ const updateBanner = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "Image updated!!!", updatedDepartment));
 });
 
+const updateMobileBanner = asyncHandler(async (req, res) => {
+  const { id } = req.query;
+  if (!id) {
+    throw new ApiError(400, "Id is required!!!");
+  }
+
+  const department = await Department.findOne({ _id: id });
+  if (!department) {
+    throw new ApiError(400, "No department found!!!");
+  }
+
+  const imageLocalPath = req.files?.mobileBanner[0]?.path;
+  if (!imageLocalPath) {
+    throw new ApiError(400, "MobileBanner is required!!!");
+  }
+
+  const image = await uploadOnCloudinary(imageLocalPath);
+  if (!image) {
+    throw new ApiError(
+      500,
+      "Something went wrong while uploading the image!!!"
+    );
+  }
+
+  const updatedDepartment = await Department.findByIdAndUpdate(
+    id,
+    {
+      $set: { mobileBanner: image.url },
+    },
+    { new: true }
+  );
+
+  if (!updatedDepartment) {
+    throw new ApiError(
+      500,
+      "Something went wrong while updating the database!!!"
+    );
+  }
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, "Image updated!!!", updatedDepartment));
+});
+
 const importDepartments = asyncHandler(async (req, res) => {
   const csvLocalPath = req.files?.csv[0]?.path;
 
@@ -335,4 +382,5 @@ export {
   getDepartmentByName,
   updateBanner,
   importDepartments,
+  updateMobileBanner,
 };
