@@ -30,7 +30,7 @@ router.route("/update").post(verifyJwt, updateBlog);
 router.route("/delete").get(verifyJwt, deleteBlog);
 router.route("/block-blog").patch(verifyJwt, blockBlog);
 router.route("/unblock-blog").patch(verifyJwt, unblockBlog);
-router.route("/get-by-id").get(verifyJwt, getBannerById);
+router.route("/get-by-id").get(getBannerById);
 router.route("/update-image").post(
   verifyJwt,
   upload.fields([
