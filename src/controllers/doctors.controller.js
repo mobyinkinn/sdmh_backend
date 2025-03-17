@@ -3,6 +3,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { Department } from "../models/department.model.js";
 import csv from "csv-parser";
 import fs from "fs";
 
@@ -52,6 +53,11 @@ const createDoctor = asyncHandler(async (req, res) => {
     }
   }
 
+  const fetchedDepartment = await Department.findOne({ name: department });
+  if (!fetchedDepartment) {
+    throw new ApiError(400, "No such department exists!!!");
+  }
+
   const imageLocalPath = req.files?.image?.[0]?.path;
   if (!imageLocalPath) {
     throw new ApiError(400, "Image is required!!!");
@@ -66,7 +72,7 @@ const createDoctor = asyncHandler(async (req, res) => {
     order,
     name,
     image: image.url,
-    department,
+    department: fetchedDepartment._id,
     designation,
     availablity: parsedAvailablity,
     floor: floor ?? undefined,
@@ -137,10 +143,19 @@ const updateDoctor = asyncHandler(async (req, res) => {
     }
   }
 
+  // Fetch department if provided
+  let fetchedDepartment;
+  if (department) {
+    fetchedDepartment = await Department.findOne({ _id: department });
+    if (!fetchedDepartment) {
+      throw new ApiError(400, "No such department exists!!!");
+    }
+  }
+
   const updateFields = {};
   if (order) updateFields.order = order;
   if (name) updateFields.name = name;
-  if (department) updateFields.department = department;
+  if (fetchedDepartment) updateFields.department = fetchedDepartment._id;
   if (designation) updateFields.designation = designation;
   if (parsedAvailablity) updateFields.availablity = parsedAvailablity;
   if (floor) updateFields.floor = floor;

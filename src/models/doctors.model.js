@@ -18,9 +18,9 @@ const doctorSchema = new Schema(
       trim: true,
     },
     department: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: "Department",
       required: true,
-      trim: true,
     },
     designation: {
       type: String,
