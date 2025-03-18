@@ -9,12 +9,10 @@ const doctorSchema = new Schema(
     },
     name: {
       type: String,
-      required: true,
       trim: true,
     },
     image: {
       type: String,
-      required: true,
       trim: true,
     },
     department: {
@@ -24,13 +22,11 @@ const doctorSchema = new Schema(
     },
     designation: {
       type: String,
-      required: true,
       trim: true,
     },
     availablity: {
       type: Map,
       of: String,
-      required: true,
     },
     floor: {
       type: String,
@@ -42,7 +38,6 @@ const doctorSchema = new Schema(
     },
     about: {
       type: String,
-      required: true,
       trim: true,
     },
     status: {
