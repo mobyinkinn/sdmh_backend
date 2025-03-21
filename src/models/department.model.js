@@ -22,6 +22,11 @@ const departmentSchema = new Schema(
       // required: true,
       trim: true,
     },
+    homeImage: {
+      type: String,
+      // required: true,
+      trim: true,
+    },
     content: {
       type: String,
       required: false,

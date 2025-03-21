@@ -43,17 +43,24 @@ const createDepartment = asyncHandler(async (req, res) => {
 
   const imageLocalPath = req.files?.image[0]?.path;
   const bannerImageLocalPath = req.files?.bannerImage[0].path;
+  const homeImageLocalPath = req.files?.homeImage[0].path;
   const mobileBannerImageLocalPath = req.files?.mobileBanner[0].path;
 
-  if (!imageLocalPath || !bannerImageLocalPath || !mobileBannerImageLocalPath) {
+  if (
+    !imageLocalPath ||
+    !bannerImageLocalPath ||
+    !mobileBannerImageLocalPath ||
+    !homeImageLocalPath
+  ) {
     throw new ApiError(400, "Images are required");
   }
 
   const image = await uploadOnCloudinary(imageLocalPath);
   const bannerImage = await uploadOnCloudinary(bannerImageLocalPath);
+  const homeImage = await uploadOnCloudinary(homeImageLocalPath);
   const mobileBanner = await uploadOnCloudinary(mobileBannerImageLocalPath);
 
-  if (!image || !bannerImage || !mobileBanner) {
+  if (!image || !bannerImage || !mobileBanner || !homeImage) {
     throw new ApiError(500, "Image failed to upload");
   }
 
@@ -62,6 +69,7 @@ const createDepartment = asyncHandler(async (req, res) => {
     image: image.url,
     bannerImage: bannerImage.url,
     mobileBanner: mobileBanner.url,
+    homeImage: homeImage.url,
     status,
     content,
   });
@@ -218,6 +226,50 @@ const updateImage = asyncHandler(async (req, res) => {
   res
     .status(200)
     .json(new ApiResponse(200, "Image updated!!!", updatedDepartment));
+});
+
+const updateHomeImage = asyncHandler(async (req, res) => {
+  const { id } = req.query;
+  if (!id) {
+    throw new ApiError(400, "Id is required!!!");
+  }
+
+  const department = await Department.findOne({ _id: id });
+  if (!department) {
+    throw new ApiError(400, "No department found!!!");
+  }
+
+  const homeImageLocalPath = req.files?.homeImage[0]?.path;
+  if (!homeImageLocalPath) {
+    throw new ApiError(400, "Home Image is required!!!");
+  }
+
+  const homeImage = await uploadOnCloudinary(homeImageLocalPath);
+  if (!homeImage) {
+    throw new ApiError(
+      500,
+      "Something went wrong while uploading the homeImage!!!"
+    );
+  }
+
+  const updatedDepartment = await Department.findByIdAndUpdate(
+    id,
+    {
+      $set: { homeImage: homeImage.url },
+    },
+    { new: true }
+  );
+
+  if (!updatedDepartment) {
+    throw new ApiError(
+      500,
+      "Something went wrong while updating the database!!!"
+    );
+  }
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, "Home Image updated!!!", updatedDepartment));
 });
 
 const updateBanner = asyncHandler(async (req, res) => {
@@ -383,4 +435,5 @@ export {
   updateBanner,
   importDepartments,
   updateMobileBanner,
+  updateHomeImage,
 };
