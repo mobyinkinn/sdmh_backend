@@ -424,6 +424,44 @@ const importDepartments = asyncHandler(async (req, res) => {
   }
 });
 
+const deleteBanner = asyncHandler(async (req, res) => {
+  const { id } = req.query;
+
+  if (!id) {
+    throw new ApiError(400, "Department ID is required!!!");
+  }
+
+  const department = await Department.findById(id);
+  if (!department) {
+    throw new ApiError(404, "Department not found!!!");
+  }
+
+  if (!department.bannerImage) {
+    throw new ApiError(400, "No banner image exists for this department!!!");
+  }
+
+  const updatedDepartment = await Department.findByIdAndUpdate(
+    id,
+    {
+      $set: { bannerImage: null },
+    },
+    { new: true }
+  );
+
+  if (!updatedDepartment) {
+    throw new ApiError(
+      500,
+      "Something went wrong while removing the banner!!!"
+    );
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, updatedDepartment, "Banner removed successfully")
+    );
+});
+
 export {
   createDepartment,
   getAllDepartments,
@@ -436,4 +474,5 @@ export {
   importDepartments,
   updateMobileBanner,
   updateHomeImage,
+  deleteBanner,
 };

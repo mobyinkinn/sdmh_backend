@@ -11,6 +11,7 @@ import {
   importDepartments,
   updateMobileBanner,
   updateHomeImage,
+  deleteBanner,
 } from "../controllers/department.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJwt } from "../middlewares/auth.middleware.js";
@@ -84,5 +85,7 @@ router
     uploadCsv.fields([{ name: "csv", maxCount: 1 }]),
     importDepartments
   );
+
+router.route("/delete-banner").delete(verifyJwt, deleteBanner);
 
 export default router;
