@@ -12,6 +12,9 @@ import {
   updateMobileBanner,
   updateHomeImage,
   deleteBanner,
+  deleteImage,
+  deleteMobileBanner,
+  deleteHomeImage,
 } from "../controllers/department.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJwt } from "../middlewares/auth.middleware.js";
@@ -87,5 +90,8 @@ router
   );
 
 router.route("/delete-banner").delete(verifyJwt, deleteBanner);
+router.route("/delete-image").delete(verifyJwt, deleteImage);
+router.route("/delete-mobile-banner").delete(verifyJwt, deleteMobileBanner);
+router.route("/delete-home-image").delete(verifyJwt, deleteHomeImage);
 
 export default router;

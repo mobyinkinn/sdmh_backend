@@ -462,6 +462,121 @@ const deleteBanner = asyncHandler(async (req, res) => {
     );
 });
 
+const deleteImage = asyncHandler(async (req, res) => {
+  const { id } = req.query;
+
+  if (!id) {
+    throw new ApiError(400, "Department ID is required!!!");
+  }
+
+  const department = await Department.findById(id);
+  if (!department) {
+    throw new ApiError(404, "Department not found!!!");
+  }
+
+  if (!department.image) {
+    throw new ApiError(400, "No image exists for this department!!!");
+  }
+
+  const updatedDepartment = await Department.findByIdAndUpdate(
+    id,
+    {
+      $set: { image: null },
+    },
+    { new: true }
+  );
+
+  if (!updatedDepartment) {
+    throw new ApiError(500, "Something went wrong while removing the image!!!");
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, updatedDepartment, "Image removed successfully")
+    );
+});
+
+const deleteMobileBanner = asyncHandler(async (req, res) => {
+  const { id } = req.query;
+
+  if (!id) {
+    throw new ApiError(400, "Department ID is required!!!");
+  }
+
+  const department = await Department.findById(id);
+  if (!department) {
+    throw new ApiError(404, "Department not found!!!");
+  }
+
+  if (!department.mobileBanner) {
+    throw new ApiError(400, "No mobile banner exists for this department!!!");
+  }
+
+  const updatedDepartment = await Department.findByIdAndUpdate(
+    id,
+    {
+      $set: { mobileBanner: null },
+    },
+    { new: true }
+  );
+
+  if (!updatedDepartment) {
+    throw new ApiError(
+      500,
+      "Something went wrong while removing the mobile banner!!!"
+    );
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        updatedDepartment,
+        "Mobile banner removed successfully"
+      )
+    );
+});
+
+const deleteHomeImage = asyncHandler(async (req, res) => {
+  const { id } = req.query;
+
+  if (!id) {
+    throw new ApiError(400, "Department ID is required!!!");
+  }
+
+  const department = await Department.findById(id);
+  if (!department) {
+    throw new ApiError(404, "Department not found!!!");
+  }
+
+  if (!department.homeImage) {
+    throw new ApiError(400, "No home image exists for this department!!!");
+  }
+
+  const updatedDepartment = await Department.findByIdAndUpdate(
+    id,
+    {
+      $set: { homeImage: null },
+    },
+    { new: true }
+  );
+
+  if (!updatedDepartment) {
+    throw new ApiError(
+      500,
+      "Something went wrong while removing the home image!!!"
+    );
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, updatedDepartment, "Home image removed successfully")
+    );
+});
+
 export {
   createDepartment,
   getAllDepartments,
@@ -475,4 +590,7 @@ export {
   updateMobileBanner,
   updateHomeImage,
   deleteBanner,
+  deleteImage,
+  deleteMobileBanner,
+  deleteHomeImage,
 };
