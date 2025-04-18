@@ -44,6 +44,8 @@ import opinionRouter from "./routes/opinion.route.js";
 import teachingRouter from "./routes/teaching.route.js";
 import newsletterRouter from "./routes/newsletter.route.js";
 import newspressRouter from "./routes/newspress.route.js";
+import checkupform from "./routes/checkupform.route.js";
+
 //routes declaration
 app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/department", departmentRouter);
@@ -61,6 +63,7 @@ app.use("/api/v1/enquiry", enquiryRouter);
 app.use("/api/v1/contact", contactRouter);
 app.use("/api/v1/videos", videoRouter);
 app.use("/api/v1/openings", openingRouter);
+app.use("/api/v1/check-up", checkupform);
 app.use("/api/v1/careers", careerRouter);
 app.use("/api/v1/tips", tipsRouter);
 app.use("/api/v1/testimonials", testimonialRouter);
