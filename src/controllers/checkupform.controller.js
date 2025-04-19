@@ -5,7 +5,7 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { Checkups } from "../models/checkupform.model.js";
 
 const createCheckup = asyncHandler(async (req, res) => {
-  const { name, phone, email,text } = req.body;
+  const { name, phone, email, text, planname } = req.body;
   if (!name) {
     throw new ApiError(400, "Please fill the required fields!!!");
   }
@@ -20,6 +20,7 @@ const createCheckup = asyncHandler(async (req, res) => {
     phone,
     email,
     text,
+    planname,
   });
 
   if (!Checkup) {

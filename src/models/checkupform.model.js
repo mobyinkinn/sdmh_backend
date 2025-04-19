@@ -22,6 +22,11 @@ const checkupformSchema = new Schema(
       required: true,
       trim: true,
     },
+    planname: {
+      type: String,
+      required: true,
+      trim: true,
+    },
   },
   { timestamps: true }
 );
