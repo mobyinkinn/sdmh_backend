@@ -5,7 +5,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 const createOpinion = asyncHandler(async (req, res) => {
-  const { name, phone, email, speciality } = req.body;
+  const { name, phone, email, speciality, text } = req.body;
   if (!name) {
     throw new ApiError(400, "Please fill the required fields!!!");
   }
@@ -32,6 +32,7 @@ const createOpinion = asyncHandler(async (req, res) => {
     email,
     speciality,
     file: file.url,
+    text,
   });
 
   if (!Opinion) {
