@@ -10,6 +10,7 @@ import fs from "fs";
 const createDoctor = asyncHandler(async (req, res) => {
   const {
     order,
+    isHod,
     name,
     department,
     designation,
@@ -27,7 +28,8 @@ const createDoctor = asyncHandler(async (req, res) => {
     !designation ||
     !availablity ||
     !about ||
-    !status
+    !status ||
+    !isHod
   ) {
     throw new ApiError(400, "Please fill the required fields!!!");
   }
@@ -79,6 +81,7 @@ const createDoctor = asyncHandler(async (req, res) => {
     room: room ?? undefined,
     about,
     status,
+    isHod,
   });
 
   if (!doctor) {
@@ -101,6 +104,7 @@ const updateDoctor = asyncHandler(async (req, res) => {
     room,
     about,
     status,
+    isHod,
   } = req.body;
 
   if (
@@ -112,7 +116,8 @@ const updateDoctor = asyncHandler(async (req, res) => {
     !floor &&
     !room &&
     !about &&
-    !(status === true || status === false)
+    !(status === true || status === false) &&
+    !(isHod===true || isHod === false)
   ) {
     throw new ApiError(400, "All fields are empty");
   }
@@ -161,7 +166,8 @@ const updateDoctor = asyncHandler(async (req, res) => {
   if (floor) updateFields.floor = floor;
   if (room) updateFields.room = room;
   if (about) updateFields.about = about;
-  if (status !== undefined) updateFields.status = status;
+  if (status !== undefined) updateFields.isHod = isHod;
+  if (isHod !== undefined) updateFields.isHod = isHod;
 
   const updatedDoctor = await Doctor.findByIdAndUpdate(
     req.query.id,
@@ -338,6 +344,7 @@ const importDoctors = asyncHandler(async (req, res) => {
     "room",
     "status",
     "order",
+    "isHod",
   ];
   const errors = [];
   const results = [];

@@ -9,12 +9,12 @@ const noticeSchema = new mongoose.Schema(
     },
     year: {
       type: Number,
-      required: true,
+      required: false,
     },
     department: {
       type: Schema.Types.ObjectId,
       ref: "Department",
-      required: true,
+      required: false,
     },
     file: {
       type: String,

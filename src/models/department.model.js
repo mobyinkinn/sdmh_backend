@@ -2,6 +2,7 @@ import mongoose, { Schema } from "mongoose";
 
 const departmentSchema = new Schema(
   {
+    
     name: {
       type: String,
       required: true,
@@ -22,6 +23,11 @@ const departmentSchema = new Schema(
       // required: true,
       trim: true,
     },
+    defaultDepartment: {
+      type: Boolean,
+      default: false,
+    },
+
     homeImage: {
       type: String,
       // required: true,

@@ -15,6 +15,8 @@ import {
   deleteImage,
   deleteMobileBanner,
   deleteHomeImage,
+  setDefaultDepartmentByIndex,
+  getDefaultDepartment,
 } from "../controllers/department.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJwt } from "../middlewares/auth.middleware.js";
@@ -93,5 +95,8 @@ router.route("/delete-banner").delete(verifyJwt, deleteBanner);
 router.route("/delete-image").delete(verifyJwt, deleteImage);
 router.route("/delete-mobile-banner").delete(verifyJwt, deleteMobileBanner);
 router.route("/delete-home-image").delete(verifyJwt, deleteHomeImage);
+router.get("/set-default", verifyJwt, setDefaultDepartmentByIndex);
+router.get("/get-default", getDefaultDepartment);
+
 
 export default router;

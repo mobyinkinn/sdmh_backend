@@ -577,8 +577,49 @@ const deleteHomeImage = asyncHandler(async (req, res) => {
     );
 });
 
+
+
+const setDefaultDepartmentByIndex = asyncHandler(async (req, res) => {
+  const { index } = req.query;
+
+  if (index === undefined || isNaN(index)) {
+    throw new ApiError(400, "Please provide a valid index");
+  }
+
+  const departments = await Department.find().sort({ createdAt: 1 }); // Ensure consistent order
+  const target = departments[parseInt(index)];
+
+  if (!target) {
+    throw new ApiError(404, "No department found at this index");
+  }
+
+  // Reset previous defaults
+  await Department.updateMany({}, { $set: { defaultDepartment: false } });
+
+  // Set new default
+  await Department.findByIdAndUpdate(target._id, {
+    $set: { defaultDepartment: true },
+  });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, target, "Default department set successfully"));
+});
+const getDefaultDepartment = asyncHandler(async (req, res) => {
+  const department = await Department.findOne({ defaultDepartment: true });
+
+  if (!department) {
+    throw new ApiError(404, "No default department is set");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, department, "Default department retrieved"));
+});
+
 export {
   createDepartment,
+  getDefaultDepartment,
   getAllDepartments,
   updateDepartment,
   getDepartment,
@@ -593,4 +634,5 @@ export {
   deleteImage,
   deleteMobileBanner,
   deleteHomeImage,
+  setDefaultDepartmentByIndex,
 };

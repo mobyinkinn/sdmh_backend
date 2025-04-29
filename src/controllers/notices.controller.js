@@ -8,7 +8,7 @@ import { Department } from "../models/department.model.js";
 const createNotice = asyncHandler(async (req, res) => {
   const { name, year, department, status } = req.body;
 
-  if (!name || !year || !department) {
+  if (!name) {
     throw new ApiError(400, "Please fill the required fields!!!");
   }
 
@@ -27,15 +27,15 @@ const createNotice = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Entry already exists, please change the name!!!");
   }
 
-  const fetchedDepartment = await Department.findOne({ name: department });
-  if (!fetchedDepartment) {
-    throw new ApiError(400, "No such department exists!!!");
-  }
+  // const fetchedDepartment = await Department.findOne({ name: department });
+  // if (!fetchedDepartment) {
+  //   throw new ApiError(400, "No such department exists!!!");
+  // }
 
   const Notice = await Notices.create({
     name,
-    year,
-    department: fetchedDepartment._id,
+    // year,
+    // department: fetchedDepartment._id,
     status,
     file: file.url,
   });

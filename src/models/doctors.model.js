@@ -4,7 +4,7 @@ const doctorSchema = new Schema(
   {
     order: {
       type: Number,
-      required: true,
+      required: false,
       trim: true,
     },
     name: {
@@ -46,6 +46,10 @@ const doctorSchema = new Schema(
       trim: true,
     },
     status: {
+      type: Boolean,
+      required: true,
+    },
+    isHod: {
       type: Boolean,
       required: true,
     },
