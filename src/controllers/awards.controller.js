@@ -15,6 +15,7 @@ const createAward = asyncHandler(async (req, res) => {
   if (!imageLocalPath) {
     throw new ApiError(400, "Image is required!!");
   }
+  
   const image = await uploadOnCloudinary(imageLocalPath);
   if (!image) {
     throw new ApiError(500, "Image failed to upload!!!");

@@ -22,7 +22,7 @@ const opinionSchema = new Schema(
       required: true,
       trim: true,
     },
-    file: {
+    images: {
       type: String,
       required: true,
       trim: true,

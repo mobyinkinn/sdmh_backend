@@ -11,13 +11,11 @@ const createOpinion = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Please fill the required fields!!!");
   }
 
-  // Check if images are provided
   const images = [];
   if (!req.files?.images || req.files.images.length === 0) {
     throw new ApiError(400, "Images are required");
   }
 
-  // Iterate through each file and upload
   for (let i = 0; i < req.files.images.length; i++) {
     const fileLocalPath = req.files.images[i].path;
 
@@ -28,18 +26,15 @@ const createOpinion = asyncHandler(async (req, res) => {
     images.push(image.url);
   }
 
-  // Ensure at least one image is uploaded
   if (images.length === 0) {
     throw new ApiError(500, "Something went wrong while uploading the images");
   }
 
-  // Check if opinion with the same name already exists
   const exsisting = await Opinions.find({ name });
   if (exsisting.length > 1) {
     throw new ApiError(400, "Entry already exists, please change the name!!!");
   }
 
-  // Create new opinion
   const Opinion = await Opinions.create({
     name,
     phone,
