@@ -12,8 +12,7 @@ const router = Router();
 router
   .route("/create")
   .post(
-    verifyJwt,
-    upload.fields([{ name: "file", maxCount: 1 }]),
+    upload.fields([{ name: "images", maxCount: 6 }]),
     createOpinion
   );
 router.route("/get-all").get(verifyJwt, getAllOpinions);

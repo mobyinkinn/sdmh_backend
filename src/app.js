@@ -1,9 +1,13 @@
 import e from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import path from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
 
 const app = e();
-
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 app.use(
   cors({
     origin: process.env.CORS_ORIGIN,
@@ -11,6 +15,7 @@ app.use(
     origin: true,
   })
 );
+app.use("/data", e.static(path.join(__dirname, "../data")));
 
 app.use(e.json({ limit: "16kb" }));
 app.use(e.urlencoded({ extended: true, limit: "16kb" }));

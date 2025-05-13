@@ -6,32 +6,46 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 const createOpinion = asyncHandler(async (req, res) => {
   const { name, phone, email, speciality, text } = req.body;
+
   if (!name) {
     throw new ApiError(400, "Please fill the required fields!!!");
   }
 
-  const fileLocalPath = req.files.file[0]?.path;
-  if (!fileLocalPath) {
-    throw new ApiError(400, "Please upload the file!!!");
+  // Check if images are provided
+  const images = [];
+  if (!req.files?.images || req.files.images.length === 0) {
+    throw new ApiError(400, "Images are required");
   }
 
-  const file = await uploadOnCloudinary(fileLocalPath);
+  // Iterate through each file and upload
+  for (let i = 0; i < req.files.images.length; i++) {
+    const fileLocalPath = req.files.images[i].path;
 
-  if (!file) {
-    throw new ApiError(500, "Failed to upload the file, Please try again!!!");
+    const image = await uploadOnCloudinary(fileLocalPath);
+    if (!image) {
+      throw new ApiError(500, "Something went wrong while uploading the image");
+    }
+    images.push(image.url);
   }
 
+  // Ensure at least one image is uploaded
+  if (images.length === 0) {
+    throw new ApiError(500, "Something went wrong while uploading the images");
+  }
+
+  // Check if opinion with the same name already exists
   const exsisting = await Opinions.find({ name });
   if (exsisting.length > 1) {
     throw new ApiError(400, "Entry already exists, please change the name!!!");
   }
 
+  // Create new opinion
   const Opinion = await Opinions.create({
     name,
     phone,
     email,
     speciality,
-    file: file.url,
+    images: images,
     text,
   });
 
@@ -46,6 +60,7 @@ const createOpinion = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, Opinion, "Opinion created!!!"));
 });
+
 
 const getAllOpinions = asyncHandler(async (req, res) => {
   const opinions = await Opinions.find();

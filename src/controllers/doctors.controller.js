@@ -166,7 +166,7 @@ const updateDoctor = asyncHandler(async (req, res) => {
   if (floor) updateFields.floor = floor;
   if (room) updateFields.room = room;
   if (about) updateFields.about = about;
-  if (status !== undefined) updateFields.isHod = isHod;
+  if (status !== undefined) updateFields.status = status;
   if (isHod !== undefined) updateFields.isHod = isHod;
 
   const updatedDoctor = await Doctor.findByIdAndUpdate(
