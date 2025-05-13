@@ -23,7 +23,7 @@ const opinionSchema = new Schema(
       trim: true,
     },
     images: {
-      type: String,
+      type: [String],
       required: true,
       trim: true,
     },
