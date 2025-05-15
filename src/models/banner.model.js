@@ -2,13 +2,16 @@ import mongoose, { Schema } from "mongoose";
 
 const bannerSchema = new Schema(
   {
-    banner: {
-      type: String,
+    images: {
+      type: [String],
       required: true,
+      trim: true,
     },
-    mobileBanner: {
-      type: String,
+
+    mobileimages: {
+      type: [String],
       required: true,
+      trim: true,
     },
     link: {
       type: String,

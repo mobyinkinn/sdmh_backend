@@ -17,12 +17,12 @@ router.route("/create").post(
   verifyJwt,
   upload.fields([
     {
-      name: "banner",
-      maxCount: 1,
+      name: "images",
+      maxCount: 3,
     },
     {
-      name: "mobileBanner",
-      maxCount: 1,
+      name: "mobileimages",
+      maxCount: 3,
     },
   ]),
   createBanner
@@ -33,12 +33,12 @@ router.route("/update/").post(
   verifyJwt,
   upload.fields([
     {
-      name: "banner",
-      maxCount: 1,
+      name: "images",
+      maxCount: 3,
     },
     {
-      name: "mobileBanner",
-      maxCount: 1,
+      name: "mobileimages",
+      maxCount: 3,
     },
   ]),
   updateBanner

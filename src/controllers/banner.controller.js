@@ -4,9 +4,90 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
+// const createBanner = asyncHandler(async (req, res) => {
+//   const { page, status, link } = req.body;
+//   console.log("Req Body:", req.body);
+
+//   if (!page) {
+//     throw new ApiError(400, "Page is required!!!");
+//   }
+
+//   const existingBanner = await Banner.findOne({ page });
+//   if (existingBanner) {
+//     throw new ApiError(400, "Banner for this page already exists!!!");
+//   }
+
+
+
+//    const images = [];
+//    if (!req.files?.images || req.files.images.length === 0) {
+//      throw new ApiError(400, "Images are required");
+//    }
+
+//    for (let i = 0; i < req.files.images.length; i++) {
+//      const fileLocalPath = req.files.images[i].path;
+
+//      const image = await uploadOnCloudinary(fileLocalPath);
+//      if (!image) {
+//        throw new ApiError(
+//          500,
+//          "Something went wrong while uploading the image"
+//        );
+//      }
+//      images.push(image.url);
+//    }
+
+//    if (images.length === 0) {
+//      throw new ApiError(500, "Something went wrong while uploading the images");
+//    }
+
+
+//    const mobileimages = [];
+//    if (!req.files?.mobileimages || req.files.mobileimages.length === 0) {
+//      throw new ApiError(400, "Images are required");
+//    }
+
+//    for (let i = 0; i < req.files.mobileimages.length; i++) {
+//      const fileLocalPath = req.files.mobileimages[i].path;
+
+//      const image = await uploadOnCloudinary(fileLocalPath);
+//      if (!image) {
+//        throw new ApiError(
+//          500,
+//          "Something went wrong while uploading the image"
+//        );
+//      }
+//      mobileimages.push(image.url);
+//    }
+
+//    if (mobileimages.length === 0) {
+//      throw new ApiError(500, "Something went wrong while uploading the images");
+//    }
+
+//   const banner = await Banner.create({
+//     page,
+//     images: images,
+//     mobileimages: mobileimages,
+//     link,
+//     status,
+//   });
+
+//   if (!banner) {
+//     throw new ApiError(
+//       500,
+//       "Something went wrong while creating the banner!!!"
+//     );
+//   }
+
+//   res
+//     .status(200)
+//     .json(new ApiResponse(200, "Banner created successfully!!!", banner));
+// });
+
+
 const createBanner = asyncHandler(async (req, res) => {
   const { page, status, link } = req.body;
-  console.log("Req Body:", req.body);
+  console.log("Req Body:", req.body); // Check the incoming request body
 
   if (!page) {
     throw new ApiError(400, "Page is required!!!");
@@ -17,34 +98,42 @@ const createBanner = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Banner for this page already exists!!!");
   }
 
-  const localBannerPath = req.files?.banner[0]?.path;
-  if (!localBannerPath) {
-    throw new ApiError(400, "Banner image is required!!!");
-  }
-  const bannerUrl = await uploadOnCloudinary(localBannerPath);
-  if (!bannerUrl) {
-    throw new ApiError(
-      500,
-      "Something went wrong while uploading the banner!!!"
-    );
+  // Initialize arrays to store image URLs
+  const images = [];
+  if (!req.files?.images || req.files.images.length === 0) {
+    throw new ApiError(400, "Images are required");
   }
 
-  const localMobileBannerPath = req.files?.mobileBanner[0]?.path;
-  if (!localMobileBannerPath) {
-    throw new ApiError(400, "Mobile banner image is required!!!");
-  }
-  const mobileBannerUrl = await uploadOnCloudinary(localMobileBannerPath);
-  if (!mobileBannerUrl) {
-    throw new ApiError(
-      500,
-      "Something went wrong while uploading the mobile banner!!!"
-    );
+  // Process each image for desktop banner
+  for (let i = 0; i < req.files.images.length; i++) {
+    const fileLocalPath = req.files.images[i].path;
+    const image = await uploadOnCloudinary(fileLocalPath);
+    if (!image) {
+      throw new ApiError(500, "Something went wrong while uploading the image");
+    }
+    images.push(image.url);
   }
 
+  const mobileimages = [];
+  if (!req.files?.mobileimages || req.files.mobileimages.length === 0) {
+    throw new ApiError(400, "Images are required");
+  }
+
+  // Process each image for mobile banner
+  for (let i = 0; i < req.files.mobileimages.length; i++) {
+    const fileLocalPath = req.files.mobileimages[i].path;
+    const image = await uploadOnCloudinary(fileLocalPath);
+    if (!image) {
+      throw new ApiError(500, "Something went wrong while uploading the image");
+    }
+    mobileimages.push(image.url);
+  }
+
+  // Create the banner document in MongoDB
   const banner = await Banner.create({
     page,
-    banner: bannerUrl.url,
-    mobileBanner: mobileBannerUrl.url,
+    images: images,
+    mobileimages: mobileimages,
     link,
     status,
   });
@@ -105,8 +194,8 @@ const updateBanner = asyncHandler(async (req, res) => {
 
   const updateFields = {};
 
-  if (req.files?.banner) {
-    const localBannerPath = req.files.banner[0]?.path;
+  if (req.files?.images) {
+    const localBannerPath = req.files.images[0]?.path;
     if (localBannerPath) {
       const bannerUrl = await uploadOnCloudinary(localBannerPath);
       if (!bannerUrl) {
@@ -115,12 +204,12 @@ const updateBanner = asyncHandler(async (req, res) => {
           "Something went wrong while uploading the banner!!!"
         );
       }
-      updateFields.banner = bannerUrl.url;
+      updateFields.images = bannerUrl.url;
     }
   }
 
-  if (req.files?.mobileBanner) {
-    const localMobileBannerPath = req.files.mobileBanner[0]?.path;
+  if (req.files?.mobileimages) {
+    const localMobileBannerPath = req.files.mobileimages[0]?.path;
     if (localMobileBannerPath) {
       const mobileBannerUrl = await uploadOnCloudinary(localMobileBannerPath);
       if (!mobileBannerUrl) {
@@ -129,7 +218,7 @@ const updateBanner = asyncHandler(async (req, res) => {
           "Something went wrong while uploading the mobile banner!!!"
         );
       }
-      updateFields.mobileBanner = mobileBannerUrl.url;
+      updateFields.mobileimages = mobileBannerUrl.url;
     }
   }
 
