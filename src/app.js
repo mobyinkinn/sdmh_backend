@@ -4,6 +4,9 @@ import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = e();
 const __filename = fileURLToPath(import.meta.url);

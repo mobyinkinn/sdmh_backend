@@ -4,85 +4,89 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnLocalServer } from "../utils/cloudinary.js";
 
-// const createBanner = asyncHandler(async (req, res) => {
-//   const { page, status, link } = req.body;
-//   console.log("Req Body:", req.body);
+const createBanner = asyncHandler(async (req, res) => {
+  const { page, status, link } = req.body;
+  console.log("Req Body:", req.body);
 
-//   if (!page) {
-//     throw new ApiError(400, "Page is required!!!");
-//   }
+  if (!page) {
+    throw new ApiError(400, "Page is required!!!");
+  }
 
-//   const existingBanner = await Banner.findOne({ page });
-//   if (existingBanner) {
-//     throw new ApiError(400, "Banner for this page already exists!!!");
-//   }
-
-
-
-//    const images = [];
-//    if (!req.files?.images || req.files.images.length === 0) {
-//      throw new ApiError(400, "Images are required");
-//    }
-
-//    for (let i = 0; i < req.files.images.length; i++) {
-//      const fileLocalPath = req.files.images[i].path;
-
-//      const image = await uploadOnLocalServer(fileLocalPath);
-//      if (!image) {
-//        throw new ApiError(
-//          500,
-//          "Something went wrong while uploading the image"
-//        );
-//      }
-//      images.push(image.url);
-//    }
-
-//    if (images.length === 0) {
-//      throw new ApiError(500, "Something went wrong while uploading the images");
-//    }
+  const existingBanner = await Banner.findOne({ page });
+  if (existingBanner) {
+    throw new ApiError(400, "Banner for this page already exists!!!");
+  }
 
 
-//    const mobileimages = [];
-//    if (!req.files?.mobileimages || req.files.mobileimages.length === 0) {
-//      throw new ApiError(400, "Images are required");
-//    }
 
-//    for (let i = 0; i < req.files.mobileimages.length; i++) {
-//      const fileLocalPath = req.files.mobileimages[i].path;
+   const images = [];
+   if (!req.files?.images || req.files.images.length === 0) {
+     throw new ApiError(400, "Images are required");
+   }
 
-//      const image = await uploadOnLocalServer(fileLocalPath);
-//      if (!image) {
-//        throw new ApiError(
-//          500,
-//          "Something went wrong while uploading the image"
-//        );
-//      }
-//      mobileimages.push(image.url);
-//    }
+   for (let i = 0; i < req.files.images.length; i++) {
+     const image = await uploadOnLocalServer(
+       req.files.images[i].path,
+       req.files.images[i]?.originalname
+     );
+     if (!image) {
+       throw new ApiError(
+         500,
+         "Something went wrong while uploading the images"
+       );
+     }
+     images.push(image.url);
+   }
 
-//    if (mobileimages.length === 0) {
-//      throw new ApiError(500, "Something went wrong while uploading the images");
-//    }
+   if (images.length === 0) {
+     throw new ApiError(500, "Something went wrong while uploading the images");
+   }
 
-//   const banner = await Banner.create({
-//     page,
-//     images: images,
-//     mobileimages: mobileimages,
-//     link,
-//     status,
-//   });
 
-//   if (!banner) {
-//     throw new ApiError(
-//       500,
-//       "Something went wrong while creating the banner!!!"
-//     );
-//   }
+   const mobileimages = [];
+   if (!req.files?.mobileimages || req.files.mobileimages.length === 0) {
+     throw new ApiError(400, "Images are required");
+   }
 
-//   res
-//     .status(200)
-//     .json(new ApiResponse(200, "Banner created successfully!!!", banner));
-// });
+   for (let i = 0; i < req.files.mobileimages.length; i++) {
+     const image = await uploadOnLocalServer(
+       req.files.mobileimages[i].path,
+       req.files.mobileimages[i]?.originalname
+     );
+     if (!image) {
+       throw new ApiError(
+         500,
+         "Something went wrong while uploading the images"
+       );
+     }
+     mobileimages.push(image.url);
+   }
+
+   if (mobileimages.length === 0) {
+     throw new ApiError(500, "Something went wrong while uploading the images");
+   }
+
+  const banner = await Banner.create({
+    page,
+    images: images,
+    mobileimages: mobileimages,
+    link,
+    status,
+  });
+
+  if (!banner) {
+    throw new ApiError(
+      500,
+      "Something went wrong while creating the banner!!!"
+    );
+  }
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, "Banner created successfully!!!", banner));
+});
+
+
 
 
 // const createBanner = asyncHandler(async (req, res) => {
@@ -97,66 +101,62 @@ import { uploadOnLocalServer } from "../utils/cloudinary.js";
 //   if (existingBanner) {
 //     throw new ApiError(400, "Banner for this page already exists!!!");
 //   }
-//   const imageLocalPath = req.files?.banner[0]?.path;
+
+//   // Check if banner and mobileBanner are provided in the request
+//   const imageLocalPath = req.files?.banner ? req.files.banner[0]?.path : null;
+//   const mobileimageLocalPath = req.files?.mobileBanner
+//     ? req.files.mobileBanner[0]?.path
+//     : null;
 
 //   if (!imageLocalPath) {
-//     throw new ApiError(400, "Logo is required");
+//     throw new ApiError(400, "Logo (banner image) is required");
 //   }
-//  const banners = await uploadOnLocalServer(
-//    imageLocalPath,
-//    req.files?.banner[0]?.originalname
-//  );
-//  if (!banners) throw new ApiError(500, "Failed to upload image");
+//   if (!mobileimageLocalPath) {
+//     throw new ApiError(400, "Mobile banner image is required");
+//   }
 
+//   const banners = await uploadOnLocalServer(
+//     imageLocalPath,
+//     req.files?.banner[0]?.originalname
+//   );
+//   if (!banners) throw new ApiError(500, "Failed to upload banner image");
 
-//  const mobileimageLocalPath = req.files?.mobileBanner[0]?.path;
-
-//  if (!mobileimageLocalPath) {
-//    throw new ApiError(400, "mobilebanner is required");
-//  }
-//  const mobilebanners = await uploadOnLocalServer(
-//    mobileimageLocalPath,
-//    req.files?.mobileBanner[0]?.originalname
-//  );
-//  if (!mobilebanners) throw new ApiError(500, "Failed to upload image");
-
+//   const mobilebanners = await uploadOnLocalServer(
+//     mobileimageLocalPath,
+//     req.files?.mobileBanner[0]?.originalname
+//   );
+//   if (!mobilebanners)
+//     throw new ApiError(500, "Failed to upload mobile banner image");
 
 //   // Initialize arrays to store image URLs
 //   const images = [];
-//   // if (!req.files?.images || req.files.images.length === 0) {
-//   //   throw new ApiError(400, "Images are required");
-//   // }
-
-//   // Process each image for desktop banner
-//   for (let i = 0; i < req.files.images.length; i++) {
-//     const fileLocalPath = req.files.images[i].path;
-//     const image = await uploadOnLocalServer(
-//       fileLocalPath,
-//       req.files.images[i].originalname
-//     );
-//     // if (!image) {
-//     //   throw new ApiError(500, "Something went wrong while uploading the image");
-//     // }
-//     images.push(image.url); // Use the URL from the function's return
-
+//   if (req.files?.images && req.files.images.length > 0) {
+//     // Process each image for desktop banner
+//     for (let i = 0; i < req.files.images.length; i++) {
+//       const fileLocalPath = req.files.images[i].path;
+//       const image = await uploadOnLocalServer(
+//         fileLocalPath,
+//         req.files.images[i].originalname
+//       );
+//       if (image) {
+//         images.push(image.url); // Use the URL from the function's return
+//       }
+//     }
 //   }
 
 //   const mobileimages = [];
-//   // if (!req.files?.mobileimages || req.files.mobileimages.length === 0) {
-//   //   throw new ApiError(400, "Images are required");
-//   // }
-
-//   // Process each image for mobile banner
-//   for (let i = 0; i < req.files.mobileimages.length; i++) {
-//     const fileLocalPath = req.files.mobileimages[i].path;
-//     const image = await uploadOnLocalServer(
-//       fileLocalPath,
-//       req.files.images[i].originalname
-//     );
-//     // if (!image) {
-//     //   throw new ApiError(500, "Something went wrong while uploading the image");
-//     // }
-//     mobileimages.push(image.url);
+//   if (req.files?.mobileimages && req.files.mobileimages.length > 0) {
+//     // Process each image for mobile banner
+//     for (let i = 0; i < req.files.mobileimages.length; i++) {
+//       const fileLocalPath = req.files.mobileimages[i].path;
+//       const image = await uploadOnLocalServer(
+//         fileLocalPath,
+//         req.files.mobileimages[i].originalname
+//       );
+//       if (image) {
+//         mobileimages.push(image.url);
+//       }
+//     }
 //   }
 
 //   // Create the banner document in MongoDB
@@ -165,6 +165,8 @@ import { uploadOnLocalServer } from "../utils/cloudinary.js";
 //     images: images,
 //     mobileimages: mobileimages,
 //     link,
+//     mobilebanners: mobilebanners.url,
+//     banners:banners.url,
 //     status,
 //   });
 
@@ -179,100 +181,6 @@ import { uploadOnLocalServer } from "../utils/cloudinary.js";
 //     .status(200)
 //     .json(new ApiResponse(200, "Banner created successfully!!!", banner));
 // });
-
-
-const createBanner = asyncHandler(async (req, res) => {
-  const { page, status, link } = req.body;
-  console.log("Req Body:", req.body); // Check the incoming request body
-
-  if (!page) {
-    throw new ApiError(400, "Page is required!!!");
-  }
-
-  const existingBanner = await Banner.findOne({ page });
-  if (existingBanner) {
-    throw new ApiError(400, "Banner for this page already exists!!!");
-  }
-
-  // Check if banner and mobileBanner are provided in the request
-  const imageLocalPath = req.files?.banner ? req.files.banner[0]?.path : null;
-  const mobileimageLocalPath = req.files?.mobileBanner
-    ? req.files.mobileBanner[0]?.path
-    : null;
-
-  // if (!imageLocalPath) {
-  //   throw new ApiError(400, "Logo (banner image) is required");
-  // }
-  // if (!mobileimageLocalPath) {
-  //   throw new ApiError(400, "Mobile banner image is required");
-  // }
-
-  const banners = await uploadOnLocalServer(
-    imageLocalPath,
-    req.files?.banner[0]?.originalname
-  );
-  // if (!banners) throw new ApiError(500, "Failed to upload banner image");
-
-  const mobilebanners = await uploadOnLocalServer(
-    mobileimageLocalPath,
-    req.files?.mobileBanner[0]?.originalname
-  );
-  // if (!mobilebanners)
-  //   throw new ApiError(500, "Failed to upload mobile banner image");
-
-  // Initialize arrays to store image URLs
-  const images = [];
-  if (req.files?.images && req.files.images.length > 0) {
-    // Process each image for desktop banner
-    for (let i = 0; i < req.files.images.length; i++) {
-      const fileLocalPath = req.files.images[i].path;
-      const image = await uploadOnLocalServer(
-        fileLocalPath,
-        req.files.images[i].originalname
-      );
-      if (image) {
-        images.push(image.url); // Use the URL from the function's return
-      }
-    }
-  }
-
-  const mobileimages = [];
-  if (req.files?.mobileimages && req.files.mobileimages.length > 0) {
-    // Process each image for mobile banner
-    for (let i = 0; i < req.files.mobileimages.length; i++) {
-      const fileLocalPath = req.files.mobileimages[i].path;
-      const image = await uploadOnLocalServer(
-        fileLocalPath,
-        req.files.mobileimages[i].originalname
-      );
-      if (image) {
-        mobileimages.push(image.url);
-      }
-    }
-  }
-
-  // Create the banner document in MongoDB
-  const banner = await Banner.create({
-    page,
-    images: images,
-    mobileimages: mobileimages,
-    link,
-    mobilebanners: mobilebanners.url,
-    banners:banners.url,
-    status,
-  });
-
-  // if (!banner) {
-  //   throw new ApiError(
-  //     500,
-  //     "Something went wrong while creating the banner!!!"
-  //   );
-  // }
-
-  res
-    .status(200)
-    .json(new ApiResponse(200, "Banner created successfully!!!", banner));
-});
 
 
 const getAllBanners = asyncHandler(async (req, res) => {

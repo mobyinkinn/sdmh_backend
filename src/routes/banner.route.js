@@ -24,14 +24,6 @@ router.route("/create").post(
       name: "mobileimages",
       maxCount: 3,
     },
-    {
-      name: "banner",
-      maxCount: 1,
-    },
-    {
-      name: "mobileBanner",
-      maxCount: 1,
-    },
   ]),
   createBanner
 );

@@ -14,12 +14,6 @@ const bannerSchema = new Schema(
       trim: true,
     },
 
-     banner: {
-      type: String,
-      required: false,
-      trim: true,
-    },
-
     mobileBanner: {
       type: String,
       required: false,
