@@ -22,7 +22,7 @@ const bannerSchema = new Schema(
 
     mobileBanner: {
       type: String,
-      required: tfalserue,
+      required: false,
       trim: true,
     },
     link: {
