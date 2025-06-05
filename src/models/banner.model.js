@@ -13,6 +13,18 @@ const bannerSchema = new Schema(
       required: true,
       trim: true,
     },
+
+     banner: {
+      type: String,
+      required: false,
+      trim: true,
+    },
+
+    mobileBanner: {
+      type: String,
+      required: tfalserue,
+      trim: true,
+    },
     link: {
       type: String,
     },
