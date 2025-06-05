@@ -1,7 +1,8 @@
+
 import { Testimonial } from "../models/testimonial.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadOnLocalServer } from "../utils/cloudinary.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 const createTestimonial = asyncHandler(async (req, res) => {
@@ -16,7 +17,10 @@ const createTestimonial = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Image is required!!!");
   }
 
-  const image = await uploadOnCloudinary(imageLocalPath);
+  const image = await uploadOnLocalServer(
+    imageLocalPath,
+    req.files.image[0]?.originalname
+  );
   if (!image) {
     throw new ApiError(500, "Image failed to upload!!!");
   }

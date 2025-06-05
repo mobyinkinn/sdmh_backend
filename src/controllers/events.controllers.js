@@ -1,12 +1,83 @@
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadOnLocalServer } from "../utils/cloudinary.js";
 import { Events } from "../models/events.model.js";
+
+// const createEvents = asyncHandler(async (req, res) => {
+//   const { title, smallDescription, description, date, status, featured, tag } =
+//     req.body;
+//   if (
+//     !title ||
+//     !smallDescription ||
+//     !description ||
+//     !date ||
+//     !featured ||
+//     !tag
+//   ) {
+//     throw new ApiError(400, "Please fill the required fields!!!");
+//   }
+
+//   const existingEvent = await Events.findOne({ title });
+//   if (existingEvent) {
+//     throw new ApiError(400, "Event already exists");
+//   }
+
+//   const imageLocalPath = req.files?.image[0]?.path;
+//   if (!imageLocalPath) {
+//     throw new ApiError(400, "Image is required!!!");
+//   }
+
+//   const image = await uploadOnLocalServer(imageLocalPath);
+//   if (!image) {
+//     throw new ApiError(500, "Image failed to upload!!!");
+//   }
+
+//   const images = [];
+
+//   if (req.files?.images.length === 0) {
+//     throw new ApiError(400, "Images are requried");
+//   }
+
+//   for (let i = 0; i < req.files.images.length; i++) {
+//     const image = await uploadOnLocalServer(req.files.images[i].path);
+//     if (!image) {
+//       throw new ApiError(
+//         500,
+//         "Something went wrong while uploading the images"
+//       );
+//     }
+//     images.push(image.url);
+//   }
+
+//   if (images.length === 0) {
+//     throw new ApiError(500, "Something went wrong while uploading the images");
+//   }
+
+//   const event = await Events.create({
+//     title,
+//     tag,
+//     smallDescription,
+//     description,
+//     featured,
+//     date,
+//     status: status || true,
+//     images: images,
+//     image: image.url || undefined,
+//   });
+
+//   if (!event) {
+//     throw new ApiError(500, "Something went wrong while creating the event!!!");
+//   }
+
+//   res.status(200).json(new ApiResponse(200, "Event created", event));
+// });
 
 const createEvents = asyncHandler(async (req, res) => {
   const { title, smallDescription, description, date, status, featured, tag } =
     req.body;
+
+  // Validation: required fields
   if (
     !title ||
     !smallDescription ||
@@ -18,42 +89,53 @@ const createEvents = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Please fill the required fields!!!");
   }
 
+  // Check if event already exists
   const existingEvent = await Events.findOne({ title });
   if (existingEvent) {
     throw new ApiError(400, "Event already exists");
   }
 
-  const imageLocalPath = req.files?.image[0]?.path;
+  // Validate main image
+  const imageLocalPath = req.files?.image?.[0]?.path;
   if (!imageLocalPath) {
-    throw new ApiError(400, "Image is required!!!");
+    throw new ApiError(400, "Main image is required!!!");
   }
 
-  const image = await uploadOnCloudinary(imageLocalPath);
+  // Upload main image
+  const image = await uploadOnLocalServer(
+    imageLocalPath,
+    req.files.image[0]?.originalname
+  );
   if (!image) {
-    throw new ApiError(500, "Image failed to upload!!!");
+    throw new ApiError(500, "Main image failed to upload!!!");
   }
 
+  if (!req.files?.images || req.files.images.length === 0) {
+    throw new ApiError(400, "Additional images are required");
+  }
   const images = [];
-
-  if (req.files?.images.length === 0) {
-    throw new ApiError(400, "Images are requried");
-  }
-
+   if (!req.files?.images || req.files.images.length === 0) {
+     throw new ApiError(400, "Images are required");
+   }
   for (let i = 0; i < req.files.images.length; i++) {
-    const image = await uploadOnCloudinary(req.files.images[i].path);
-    if (!image) {
+    const imgUpload = await uploadOnLocalServer(
+      req.files.images[i].path,
+      req.files.images[i]?.originalname
+    );
+    if (!imgUpload) {
       throw new ApiError(
         500,
-        "Something went wrong while uploading the images"
+        "Something went wrong while uploading additional images"
       );
     }
-    images.push(image.url);
+    images.push(imgUpload.url);
   }
 
   if (images.length === 0) {
-    throw new ApiError(500, "Something went wrong while uploading the images");
+    throw new ApiError(500, "No additional images were uploaded");
   }
 
+  // Create the event document
   const event = await Events.create({
     title,
     tag,
@@ -61,23 +143,24 @@ const createEvents = asyncHandler(async (req, res) => {
     description,
     featured,
     date,
-    status: status || true,
+    status: status !== undefined ? status : true, // default true if not provided
+    image: image.url,
     images: images,
-    image: image.url || undefined,
   });
 
   if (!event) {
     throw new ApiError(500, "Something went wrong while creating the event!!!");
   }
 
+  // Return success response
   res.status(200).json(new ApiResponse(200, "Event created", event));
 });
 
 const getAllEvents = asyncHandler(async (req, res) => {
   const events = await Events.find();
-  if (!events || events.length === 0) {
-    throw new ApiError(500, "Something went wrong while fetching the Events");
-  }
+  // if (!events || events.length === 0) {
+  //   throw new ApiError(500, "Something went wrong while fetching the Events");
+  // }
 
   res
     .status(200)
@@ -192,7 +275,7 @@ const addImages = asyncHandler(async (req, res) => {
   const images = event.images;
 
   for (let i = 0; i < incomingImages; i++) {
-    const image = await uploadOnCloudinary(req.files.images[i].path);
+    const image = await uploadOnLocalServer(req.files.images[i].path);
     if (!image) {
       throw new ApiError(
         500,
@@ -223,7 +306,7 @@ const updateImage = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Image is required");
   }
 
-  const image = await uploadOnCloudinary(imageLocalPath);
+  const image = await uploadOnLocalServer(imageLocalPath);
 
   if (!image) {
     throw new ApiError(500, "Image failed to upload");

@@ -2,7 +2,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { Metadata } from "../models/seo.model.js"
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadOnLocalServer } from "../utils/cloudinary.js";
 import { validateMongoDbId } from "../utils/validateMongodbId.js";
 
 const createMetadata = asyncHandler(async (req, res) => {

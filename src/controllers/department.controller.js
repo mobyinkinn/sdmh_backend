@@ -2,7 +2,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { Department } from "../models/department.model.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadOnLocalServer } from "../utils/cloudinary.js";
 import csv from "csv-parser";
 import fs from "fs";
 
@@ -30,7 +30,7 @@ const createDepartment = asyncHandler(async (req, res) => {
    */
 
   const { name, content, status } = req.body;
-
+console.log("re",req.body)
   if (!name || !content || !status) {
     throw new ApiError(400, "Please fill the required fields");
   }
@@ -55,14 +55,33 @@ const createDepartment = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Images are required");
   }
 
-  const image = await uploadOnCloudinary(imageLocalPath);
-  const bannerImage = await uploadOnCloudinary(bannerImageLocalPath);
-  const homeImage = await uploadOnCloudinary(homeImageLocalPath);
-  const mobileBanner = await uploadOnCloudinary(mobileBannerImageLocalPath);
+ const image = await uploadOnLocalServer(
+   imageLocalPath,
+   req.files?.image[0]?.originalname
+ );
+ if (!image) throw new ApiError(500, "Failed to upload image");
 
-  if (!image || !bannerImage || !mobileBanner || !homeImage) {
-    throw new ApiError(500, "Image failed to upload");
-  }
+ const bannerImage = await uploadOnLocalServer(
+   bannerImageLocalPath,
+   req.files?.bannerImage[0]?.originalname
+ );
+ if (!bannerImage) throw new ApiError(500, "Failed to upload banner image");
+
+ const homeImage = await uploadOnLocalServer(
+   homeImageLocalPath,
+   req.files?.homeImage[0]?.originalname
+ );
+ if (!homeImage) throw new ApiError(500, "Failed to upload home image");
+
+ const mobileBanner = await uploadOnLocalServer(
+   mobileBannerImageLocalPath,
+   req.files?.mobileBanner[0]?.originalname
+ );
+ if (!mobileBanner) throw new ApiError(500, "Failed to upload mobile banner");
+
+  // if (!image || !bannerImage || !mobileBanner || !homeImage) {
+  //   throw new ApiError(500, "Image failed to upload");
+  // }
 
   const department = await Department.create({
     name,
@@ -200,7 +219,10 @@ const updateImage = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Image is required!!!");
   }
 
-  const image = await uploadOnCloudinary(imageLocalPath);
+  const image = await uploadOnLocalServer(
+    imageLocalPath,
+    req.files.image[0]?.originalname
+  );
   if (!image) {
     throw new ApiError(
       500,
@@ -244,7 +266,10 @@ const updateHomeImage = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Home Image is required!!!");
   }
 
-  const homeImage = await uploadOnCloudinary(homeImageLocalPath);
+  const homeImage = await uploadOnLocalServer(
+    homeImageLocalPath,
+    req.files.homeImage[0]?.originalname
+  );
   if (!homeImage) {
     throw new ApiError(
       500,
@@ -288,7 +313,10 @@ const updateBanner = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Image is required!!!");
   }
 
-  const image = await uploadOnCloudinary(imageLocalPath);
+  const image = await uploadOnLocalServer(
+    imageLocalPath,
+    req.files.banner[0]?.originalname
+  );
   if (!image) {
     throw new ApiError(
       500,
@@ -332,7 +360,10 @@ const updateMobileBanner = asyncHandler(async (req, res) => {
     throw new ApiError(400, "MobileBanner is required!!!");
   }
 
-  const image = await uploadOnCloudinary(imageLocalPath);
+  const image = await uploadOnLocalServer(
+    imageLocalPath,
+    req.files.mobileBanner[0]?.originalname
+  );
   if (!image) {
     throw new ApiError(
       500,

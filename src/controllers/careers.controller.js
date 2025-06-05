@@ -1,7 +1,7 @@
 import { Careers } from "../models/careers.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadOnLocalServer } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 const createCareer = asyncHandler(async (req, res) => {
@@ -27,7 +27,7 @@ const createCareer = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Resume is required!!!");
   }
 
-  const file = await uploadOnCloudinary(fileLocalPath);
+  const file = await uploadOnLocalServer(fileLocalPath);
   if (!file) {
     throw new ApiError(500, "File failed to upload");
   }

@@ -1,7 +1,7 @@
 import { Doctor } from "../models/doctors.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadOnLocalServer } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { Department } from "../models/department.model.js";
 import csv from "csv-parser";
@@ -21,18 +21,18 @@ const createDoctor = asyncHandler(async (req, res) => {
     availablity,
   } = req.body;
 
-  if (
-    !order ||
-    !name ||
-    !department ||
-    !designation ||
-    !availablity ||
-    !about ||
-    !status ||
-    !isHod
-  ) {
-    throw new ApiError(400, "Please fill the required fields!!!");
-  }
+  // if (
+  //   !order ||
+  //   !name ||
+  //   !department ||
+  //   !designation ||
+  //   !availablity ||
+  //   !about ||
+  //   !status ||
+  //   !isHod
+  // ) {
+  //   throw new ApiError(400, "Please fill the required fields!!!");
+  // }
 
   // Convert availablity from string to object
   let parsedAvailablity;
@@ -65,7 +65,10 @@ const createDoctor = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Image is required!!!");
   }
 
-  const image = await uploadOnCloudinary(imageLocalPath);
+  const image = await uploadOnLocalServer(
+    imageLocalPath,
+    req.files?.image[0]?.originalname
+  );
   if (!image) {
     throw new ApiError(500, "Image failed to upload!!!");
   }
@@ -93,6 +96,114 @@ const createDoctor = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, doctor, "Doctor created successfully!!!"));
 });
 
+// const updateDoctor = asyncHandler(async (req, res) => {
+//   const {
+//     order,
+//     name,
+//     department,
+//     designation,
+//     availablity,
+//     floor,
+//     room,
+//     about,
+//     status,
+//     isHod,
+//   } = req.body;
+
+//   // if (
+//   //   !order &&
+//   //   !name &&
+//   //   !department &&
+//   //   !designation &&
+//   //   !availablity &&
+//   //   // !floor &&
+//   //   // !room &&
+//   //   !about &&
+//   //   !(status === true || status === false) &&
+//   //   !(isHod===true || isHod === false)
+//   // ) {
+//   //   throw new ApiError(400, "All fields are empty");
+//   // }
+// // if (
+// //   order === undefined &&
+// //   name === undefined &&
+// //   department === undefined &&
+// //   designation === undefined &&
+// //   availablity === undefined &&
+// //   floor === undefined &&
+// //   room === undefined &&
+// //   about === undefined &&
+// //   status === undefined &&
+// //   isHod === undefined
+// // ) {
+// //   throw new ApiError(400, "All fields are empty");
+// // }
+
+//   const doctor = await Doctor.findById(req.query.id);
+//   if (!doctor) {
+//     throw new ApiError(400, "No such doctor exists!!!");
+//   }
+
+//   // Convert availablity from string to object if provided
+//   let parsedAvailablity;
+//   if (availablity) {
+//     try {
+//       parsedAvailablity =
+//         typeof availablity === "string" ? JSON.parse(availablity) : availablity;
+
+//       if (
+//         typeof parsedAvailablity !== "object" ||
+//         Array.isArray(parsedAvailablity)
+//       ) {
+//         throw new Error();
+//       }
+//     } catch (error) {
+//       throw new ApiError(
+//         400,
+//         "Availability must be a valid JSON object with key-value pairs!!!"
+//       );
+//     }
+//   }
+
+//   // Fetch department if provided
+//   let fetchedDepartment;
+//   if (department) {
+//     fetchedDepartment = await Department.findOne({ _id: department });
+//     if (!fetchedDepartment) {
+//       throw new ApiError(400, "No such department exists!!!");
+//     }
+//   }
+
+//   const updateFields = {};
+//   if (order) updateFields.order = order;
+//   if (name) updateFields.name = name;
+//   if (fetchedDepartment) updateFields.department = fetchedDepartment._id;
+//   if (designation) updateFields.designation = designation;
+//   if (parsedAvailablity) updateFields.availablity = parsedAvailablity;
+//   if (floor) updateFields.floor = floor;
+//   if (room) updateFields.room = room;
+//   if (about) updateFields.about = about;
+//   if (status !== undefined) updateFields.status = status;
+//   if (isHod !== undefined) updateFields.isHod = isHod;
+
+//   const updatedDoctor = await Doctor.findByIdAndUpdate(
+//     req.query.id,
+//     {
+//       $set: updateFields,
+//     },
+//     { new: true }
+//   );
+
+//   if (!updatedDoctor) {
+//     throw new ApiError(500, "Something went wrong while updating doctor");
+//   }
+
+//   return res
+//     .status(200)
+//     .json(new ApiResponse(200, updatedDoctor, "Doctor Updated Successfully"));
+// });
+
+
 const updateDoctor = asyncHandler(async (req, res) => {
   const {
     order,
@@ -107,83 +218,82 @@ const updateDoctor = asyncHandler(async (req, res) => {
     isHod,
   } = req.body;
 
-  if (
-    !order &&
-    !name &&
-    !department &&
-    !designation &&
-    !availablity &&
-    !floor &&
-    !room &&
-    !about &&
-    !(status === true || status === false) &&
-    !(isHod===true || isHod === false)
-  ) {
-    throw new ApiError(400, "All fields are empty");
+  const doctorId = req.query.id;
+
+  if (!doctorId) {
+    throw new ApiError(400, "Doctor ID is required");
   }
 
-  const doctor = await Doctor.findById(req.query.id);
+  const doctor = await Doctor.findById(doctorId);
   if (!doctor) {
-    throw new ApiError(400, "No such doctor exists!!!");
+    throw new ApiError(404, "No such doctor exists");
   }
 
-  // Convert availablity from string to object if provided
-  let parsedAvailablity;
-  if (availablity) {
-    try {
-      parsedAvailablity =
-        typeof availablity === "string" ? JSON.parse(availablity) : availablity;
-
-      if (
-        typeof parsedAvailablity !== "object" ||
-        Array.isArray(parsedAvailablity)
-      ) {
-        throw new Error();
-      }
-    } catch (error) {
-      throw new ApiError(
-        400,
-        "Availability must be a valid JSON object with key-value pairs!!!"
-      );
-    }
-  }
-
-  // Fetch department if provided
-  let fetchedDepartment;
-  if (department) {
-    fetchedDepartment = await Department.findOne({ _id: department });
-    if (!fetchedDepartment) {
-      throw new ApiError(400, "No such department exists!!!");
-    }
+  // If none of the fields are present, reject
+  if (
+    order === undefined &&
+    name === undefined &&
+    department === undefined &&
+    designation === undefined &&
+    availablity === undefined &&
+    floor === undefined &&
+    room === undefined &&
+    about === undefined &&
+    status === undefined &&
+    isHod === undefined
+  ) {
+    throw new ApiError(400, "No fields provided to update");
   }
 
   const updateFields = {};
-  if (order) updateFields.order = order;
-  if (name) updateFields.name = name;
-  if (fetchedDepartment) updateFields.department = fetchedDepartment._id;
-  if (designation) updateFields.designation = designation;
-  if (parsedAvailablity) updateFields.availablity = parsedAvailablity;
-  if (floor) updateFields.floor = floor;
-  if (room) updateFields.room = room;
-  if (about) updateFields.about = about;
+
+  if (order !== undefined) updateFields.order = order;
+  if (name !== undefined) updateFields.name = name;
+
+  if (department !== undefined) {
+    const fetchedDepartment = await Department.findById(department);
+    if (!fetchedDepartment) {
+      throw new ApiError(400, "No such department exists");
+    }
+    updateFields.department = fetchedDepartment._id;
+  }
+
+  if (designation !== undefined) updateFields.designation = designation;
+
+  if (availablity !== undefined) {
+    try {
+      const parsed =
+        typeof availablity === "string" ? JSON.parse(availablity) : availablity;
+
+      if (typeof parsed !== "object" || Array.isArray(parsed)) {
+        throw new Error();
+      }
+
+      updateFields.availablity = parsed;
+    } catch {
+      throw new ApiError(400, "Invalid availablity format");
+    }
+  }
+
+  if (floor !== undefined) updateFields.floor = floor;
+  if (room !== undefined) updateFields.room = room;
+  if (about !== undefined) updateFields.about = about;
   if (status !== undefined) updateFields.status = status;
   if (isHod !== undefined) updateFields.isHod = isHod;
 
   const updatedDoctor = await Doctor.findByIdAndUpdate(
-    req.query.id,
-    {
-      $set: updateFields,
-    },
+    doctorId,
+    { $set: updateFields },
     { new: true }
   );
 
   if (!updatedDoctor) {
-    throw new ApiError(500, "Something went wrong while updating doctor");
+    throw new ApiError(500, "Doctor update failed");
   }
 
   return res
     .status(200)
-    .json(new ApiResponse(200, updatedDoctor, "Doctor Updated Successfully"));
+    .json(new ApiResponse(200, updatedDoctor, "Doctor updated successfully"));
 });
 
 const deleteDoctor = asyncHandler(async (req, res) => {
@@ -281,11 +391,12 @@ const updateImage = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Image is required");
   }
 
-  const image = await uploadOnCloudinary(imageLocalPath);
+   const logo = await uploadOnLocalServer(
+     imageLocalPath,
+     req.files?.image[0]?.originalname
+   );
+   if (!logo) throw new ApiError(500, "Failed to upload image");
 
-  if (!image) {
-    throw new ApiError(500, "Image failed to upload");
-  }
 
   const updatedDoctor = await Doctor.findByIdAndUpdate(
     req.query.id,

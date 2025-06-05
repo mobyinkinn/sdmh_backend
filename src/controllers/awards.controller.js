@@ -1,7 +1,7 @@
 import { Awards } from "../models/awards.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadOnLocalServer } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 const createAward = asyncHandler(async (req, res) => {
@@ -16,7 +16,10 @@ const createAward = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Image is required!!");
   }
   
-  const image = await uploadOnCloudinary(imageLocalPath);
+  const image = await uploadOnLocalServer(
+    imageLocalPath,
+    req.files?.image[0]?.originalname
+  );
   if (!image) {
     throw new ApiError(500, "Image failed to upload!!!");
   }
@@ -25,7 +28,10 @@ const createAward = asyncHandler(async (req, res) => {
   if (!bannerLocalPath) {
     throw ApiError(400, "Banner is required!!!");
   }
-  const banner = await uploadOnCloudinary(bannerLocalPath);
+  const banner = await uploadOnLocalServer(
+    bannerLocalPath,
+    req.files.banner[0]?.originalname
+  );
   if (!banner) {
     throw new ApiError(500, "Banner failed to upload!!!");
   }
@@ -37,7 +43,10 @@ const createAward = asyncHandler(async (req, res) => {
   }
 
   for (let i = 0; i < req.files.images.length; i++) {
-    const image = await uploadOnCloudinary(req.files.images[i].path);
+    const image = await uploadOnLocalServer(
+      req.files.images[i].path,
+      req.files.images[i]?.originalname
+    );
     if (!image) {
       throw new ApiError(
         500,
@@ -128,7 +137,7 @@ const updateImage = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Image is required");
   }
 
-  const image = await uploadOnCloudinary(imageLocalPath);
+  const image = await uploadOnLocalServer(imageLocalPath);
 
   if (!image) {
     throw new ApiError(500, "Image failed to upload");
@@ -195,7 +204,7 @@ const updateImages = asyncHandler(async (req, res) => {
   }
 
   for (let i = 0; i < req.files.images.length; i++) {
-    const image = await uploadOnCloudinary(req.files.images[i].path);
+    const image = await uploadOnLocalServer(req.files.images[i].path);
     if (!image) {
       throw new ApiError(
         500,
@@ -234,7 +243,7 @@ const updateBanner = asyncHandler(async (req, res) => {
   }
 
   const bannerLocalPath = req.files?.banner[0]?.path;
-  const banner = await uploadOnCloudinary(bannerLocalPath);
+  const banner = await uploadOnLocalServer(bannerLocalPath);
 
   const updatedAward = await Awards.findByIdAndUpdate(
     req.query.id,

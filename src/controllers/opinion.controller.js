@@ -2,7 +2,7 @@ import { Opinions } from "../models/opinion.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadOnLocalServer } from "../utils/cloudinary.js";
 
 const createOpinion = asyncHandler(async (req, res) => {
   const { name, phone, email, speciality, text } = req.body;
@@ -19,7 +19,7 @@ const createOpinion = asyncHandler(async (req, res) => {
   for (let i = 0; i < req.files.images.length; i++) {
     const fileLocalPath = req.files.images[i].path;
 
-    const image = await uploadOnCloudinary(fileLocalPath);
+    const image = await uploadOnLocalServer(fileLocalPath);
     if (!image) {
       throw new ApiError(500, "Something went wrong while uploading the image");
     }

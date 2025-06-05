@@ -2,7 +2,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { Academics } from "../models/academics.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadOnLocalServer } from "../utils/cloudinary.js";
 
 const createAcademics = asyncHandler(async (req, res) => {
   const { name, content, status } = req.body;
@@ -24,8 +24,8 @@ const createAcademics = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Images are required");
   }
 
-  const image = await uploadOnCloudinary(imageLocalPath);
-  const bannerImage = await uploadOnCloudinary(bannerImageLocalPath);
+  const image = await uploadOnLocalServer(imageLocalPath);
+  const bannerImage = await uploadOnLocalServer(bannerImageLocalPath);
 
   if (!image || !bannerImage) {
     throw new ApiError(500, "Image failed to upload!!!");

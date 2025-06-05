@@ -2,7 +2,7 @@ import { Downloadables } from "../models/downloadables.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadOnLocalServer } from "../utils/cloudinary.js";
 
 const createDownloadable = asyncHandler(async (req, res) => {
   const { name, type, status } = req.body;
@@ -15,7 +15,10 @@ const createDownloadable = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Please upload the file!!!");
   }
 
-  const file = await uploadOnCloudinary(fileLocalPath);
+  const file = await uploadOnLocalServer(
+    fileLocalPath,
+    req.files?.file[0]?.originalname
+  );
 
   if (!file) {
     throw new ApiError(500, "Failed to upload the file, Please try again!!!");
@@ -119,7 +122,7 @@ const updateFile = asyncHandler(async (req, res) => {
     throw new ApiError(400, "File is required!!!");
   }
 
-  const file = await uploadOnCloudinary(fileLocalPath);
+  const file = await uploadOnLocalServer(fileLocalPath);
   if (!file) {
     throw new ApiError(500, "Failed to upload file!!!");
   }

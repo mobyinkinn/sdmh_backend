@@ -16,7 +16,8 @@ app.use(
   })
 );
 app.use("/data", e.static(path.join(__dirname, "../data")));
-
+app.use("/uploads", e.static(path.join(process.cwd(), "uploads")));
+app.use("/uploads", e.static(path.join(__dirname, "uploads")));
 app.use(e.json({ limit: "16kb" }));
 app.use(e.urlencoded({ extended: true, limit: "16kb" }));
 app.use(e.static("public"));
@@ -50,6 +51,8 @@ import teachingRouter from "./routes/teaching.route.js";
 import newsletterRouter from "./routes/newsletter.route.js";
 import newspressRouter from "./routes/newspress.route.js";
 import checkupform from "./routes/checkupform.route.js";
+import donationRouter from "./routes/donation.route.js";
+
 
 //routes declaration
 app.use("/api/v1/admin", adminRouter);
@@ -79,5 +82,7 @@ app.use("/api/v1/opinion", opinionRouter);
 app.use("/api/v1/teachings", teachingRouter);
 app.use("/api/v1/newsletter", newsletterRouter);
 app.use("/api/v1/newspress", newspressRouter);
+app.use("/api/v1/donation", donationRouter);
+
 
 export default app;

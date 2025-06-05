@@ -2,7 +2,7 @@ import { Checkup } from "../models/checkup.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadOnLocalServer } from "../utils/cloudinary.js";
 
 const createCheckup = asyncHandler(async (req, res) => {
   const { title, status, description, price, smallDescription } = req.body;
@@ -20,7 +20,10 @@ const createCheckup = asyncHandler(async (req, res) => {
   if (!imageLocalPath) {
     throw new ApiError(400, "Image is requried");
   }
-  const image = await uploadOnCloudinary(imageLocalPath);
+  const image = await uploadOnLocalServer(
+    imageLocalPath,
+    req.files.image[0]?.originalname
+  );
   if (!image) {
     throw new ApiError(500, "Something went wrong while uploading the image");
   }
@@ -29,7 +32,10 @@ const createCheckup = asyncHandler(async (req, res) => {
   if (!bannerLocalPath) {
     throw ApiError(400, "Banner is required!!!");
   }
-  const banner = await uploadOnCloudinary(bannerLocalPath);
+  const banner = await uploadOnLocalServer(
+    bannerLocalPath,
+    req.files.banner[0]?.originalname
+  );
 
   const images = [];
 
@@ -38,7 +44,10 @@ const createCheckup = asyncHandler(async (req, res) => {
   }
 
   for (let i = 0; i < req.files.images.length; i++) {
-    const image = await uploadOnCloudinary(req.files.images[i].path);
+    const image = await uploadOnLocalServer(
+      req.files.images[i].path,
+      req.files.images[i]?.originalname
+    );
     if (!image) {
       throw new ApiError(
         500,
@@ -113,7 +122,10 @@ const updateImage = asyncHandler(async (req, res) => {
   }
 
   const imageLocalPath = req.files?.image[0]?.path;
-  const image = await uploadOnCloudinary(imageLocalPath);
+  const image = await uploadOnLocalServer(
+    imageLocalPath,
+    req.files.image[0]?.originalname
+  );
 
   const updatedCheckup = await Checkup.findByIdAndUpdate(
     req.query.id,
@@ -141,7 +153,10 @@ const updateBanner = asyncHandler(async (req, res) => {
   }
 
   const bannerLocalPath = req.files?.banner[0]?.path;
-  const banner = await uploadOnCloudinary(bannerLocalPath);
+  const banner = await uploadOnLocalServer(
+    bannerLocalPath,
+    req.files.banner[0]?.originalname
+  );
 
   const updatedCheckup = await Checkup.findByIdAndUpdate(
     req.query.id,
@@ -271,7 +286,10 @@ const updateImages = asyncHandler(async (req, res) => {
   }
 
   for (let i = 0; i < req.files.images.length; i++) {
-    const image = await uploadOnCloudinary(req.files.images[i].path);
+    const image = await uploadOnLocalServer(
+      req.files.images[i].path,
+      req.files.images[i]?.originalname
+    );
     if (!image) {
       throw new ApiError(
         500,

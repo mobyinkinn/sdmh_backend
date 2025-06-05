@@ -2,7 +2,7 @@ import { Notices } from "../models/notice.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadOnLocalServer } from "../utils/cloudinary.js";
 import { Department } from "../models/department.model.js";
 
 const createNotice = asyncHandler(async (req, res) => {
@@ -12,12 +12,14 @@ const createNotice = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Please fill the required fields!!!");
   }
 
-  const fileLocalPath = req.files?.file[0]?.path;
+  const fileData = req.files?.file?.[0]; 
+  const fileLocalPath = fileData?.path;
+  const originalName = fileData?.originalname;
   if (!fileLocalPath) {
     throw new ApiError(400, "Please upload the file!!!");
   }
 
-  const file = await uploadOnCloudinary(fileLocalPath);
+const file = await uploadOnLocalServer(fileLocalPath, originalName);
   if (!file) {
     throw new ApiError(500, "Failed to upload the file, Please try again!!!");
   }
@@ -132,7 +134,7 @@ const updateFile = asyncHandler(async (req, res) => {
     throw new ApiError(400, "File is required!!!");
   }
 
-  const file = await uploadOnCloudinary(fileLocalPath);
+  const file = await uploadOnLocalServer(fileLocalPath);
   if (!file) {
     throw new ApiError(500, "Failed to upload file!!!");
   }

@@ -2,7 +2,7 @@ import { Tips } from "../models/tips.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadOnLocalServer } from "../utils/cloudinary.js";
 
 const createTip = asyncHandler(async (req, res) => {
   const { title, description, content, status } = req.body;
@@ -17,7 +17,7 @@ const createTip = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Image is required!!!");
   }
 
-  const image = await uploadOnCloudinary(imageLocalPath);
+  const image = await uploadOnLocalServer(imageLocalPath);
 
   if (!image) {
     throw new ApiError(500, "Image failed to upload!!!");
@@ -115,7 +115,7 @@ const updateImage = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Image is required");
   }
 
-  const image = await uploadOnCloudinary(imageLocalPath);
+  const image = await uploadOnLocalServer(imageLocalPath);
 
   if (!image) {
     throw new ApiError(500, "Image failed to upload");

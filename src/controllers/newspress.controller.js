@@ -1,7 +1,7 @@
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadOnLocalServer } from "../utils/cloudinary.js";
 import { Newspress } from "../models/newspress.model.js";
 
 const getAllNewspress = asyncHandler(async (req, res) => {
@@ -33,7 +33,7 @@ const createNewspress = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Image is required!!!");
   }
 
-  const image = await uploadOnCloudinary(imageLocalPath);
+  const image = await uploadOnLocalServer(imageLocalPath);
   if (!image) {
     throw new ApiError(500, "Image failed to upload!!!");
   }
@@ -43,7 +43,7 @@ const createNewspress = asyncHandler(async (req, res) => {
     throw ApiError(400, "Banner is required!!!");
   }
 
-  const banner = await uploadOnCloudinary(bannerLocalPath);
+  const banner = await uploadOnLocalServer(bannerLocalPath);
   if (!banner) {
     throw new ApiError(500, "Banner failed to upload!!!");
   }
@@ -125,7 +125,7 @@ const updateImage = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Image is required!!!");
   }
 
-  const image = await uploadOnCloudinary(imageLocalPath);
+  const image = await uploadOnLocalServer(imageLocalPath);
   if (!image) {
     throw new ApiError(500, "Image failed to upload!!!");
   }
@@ -158,7 +158,7 @@ const updateBanner = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Banner is required!!!");
   }
 
-  const banner = await uploadOnCloudinary(bannerLocalPath);
+  const banner = await uploadOnLocalServer(bannerLocalPath);
   if (!banner) {
     throw new ApiError(500, "Banner failed to upload!!!");
   }

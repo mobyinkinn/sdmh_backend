@@ -2,7 +2,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { Tpa } from "../models/tpa.model.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadOnLocalServer } from "../utils/cloudinary.js";
 
 const createTpa = asyncHandler(async (req, res) => {
   const { name, status, tag } = req.body;
@@ -21,12 +21,13 @@ const createTpa = asyncHandler(async (req, res) => {
   if (!imageLocalPath) {
     throw new ApiError(400, "Logo is required");
   }
+ const logo = await uploadOnLocalServer(
+   imageLocalPath,
+   req.files?.logo[0]?.originalname
+ );
+ if (!logo) throw new ApiError(500, "Failed to upload image");
 
-  const logo = await uploadOnCloudinary(imageLocalPath);
-
-  if (!logo) {
-    throw new ApiError(500, "Something went wrong while uploading the logo");
-  }
+  // const logo = await uploadOnLocalServer(imageLocalPath);
 
   const tpa = await Tpa.create({
     name,
@@ -73,7 +74,6 @@ const updateTpa = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, updatedTpa, "Tpa updated successfully"));
 
-  res.status(200).json(200, "Tpa updated successfully");
 });
 const deleteTpa = asyncHandler(async (req, res) => {
   const exists = await Tpa.findById(req.query.id);
@@ -172,11 +172,16 @@ const updateLogo = asyncHandler(async (req, res) => {
   if (!localFilePath) {
     throw new ApiError(400, "Logo is required!!!");
   }
+ const logo = await uploadOnLocalServer(
+   imageLocalPath,
+   req.files?.logo[0]?.originalname
+ );
+ if (!logo) throw new ApiError(500, "Failed to upload image");
 
-  const logo = await uploadOnCloudinary(localFilePath);
-  if (!logo) {
-    throw new ApiError(500, "Something went wrong while uploading the logo!!!");
-  }
+  // const logo = await uploadOnLocalServer(localFilePath);
+  // if (!logo) {
+  //   throw new ApiError(500, "Something went wrong while uploading the logo!!!");
+  // }
 
   const updatedTpa = await Tpa.findByIdAndUpdate(
     id,

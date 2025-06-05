@@ -1,7 +1,7 @@
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadOnLocalServer } from "../utils/cloudinary.js";
 import { Blogs } from "../models/blogs.model.js";
 
 const createBlogs = asyncHandler(async (req, res) => {
@@ -20,7 +20,10 @@ const createBlogs = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Image is required!!!");
   }
 
-  const image = await uploadOnCloudinary(imageLocalPath);
+   const image = await uploadOnLocalServer(
+     imageLocalPath,
+     req.files.image[0]?.originalname
+   );
   if (!image) {
     throw new ApiError(500, "Image failed to upload!!!");
   }
@@ -32,7 +35,10 @@ const createBlogs = asyncHandler(async (req, res) => {
   }
 
   for (let i = 0; i < req.files.images.length; i++) {
-    const image = await uploadOnCloudinary(req.files.images[i].path);
+    const image = await uploadOnLocalServer(
+      req.files.images[i].path,
+      req.files.images[i]?.originalname
+    );
     if (!image) {
       throw new ApiError(
         500,
@@ -65,10 +71,9 @@ const createBlogs = asyncHandler(async (req, res) => {
 
 const getAllBlogs = asyncHandler(async (req, res) => {
   const blogs = await Blogs.find();
-  if (!blogs || blogs.length === 0) {
-    throw new ApiError(500, "Something went wrong while fetching the Blogs");
-  }
-
+  // if (!blogs || blogs.length === 0) {
+  //   throw new ApiError(500, "Something went wrong while fetching the Blogs");
+  // }
   res
     .status(200)
     .json(new ApiResponse(200, "Blogs fetched successfully", blogs));
@@ -169,7 +174,7 @@ export const deleteImage = asyncHandler(async (req, res) => {
 //   const images = event.images;
 
 //   for (let i = 0; i < incomingImages; i++) {
-//     const image = await uploadOnCloudinary(req.files.images[i].path);
+//     const image = await uploadOnLocalServer(req.files.images[i].path);
 //     if (!image) {
 //       throw new ApiError(
 //         500,
@@ -248,7 +253,7 @@ const updateImage = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Image is required");
   }
 
-  const image = await uploadOnCloudinary(imageLocalPath);
+  const image = await uploadOnLocalServer(imageLocalPath);
 
   if (!image) {
     throw new ApiError(500, "Image failed to upload");
@@ -289,7 +294,7 @@ const addImages = asyncHandler(async (req, res) => {
   const images = blog.images;
 
   for (let i = 0; i < incomingImages; i++) {
-    const image = await uploadOnCloudinary(req.files.images[i].path);
+    const image = await uploadOnLocalServer(req.files.images[i].path);
     if (!image) {
       throw new ApiError(
         500,
@@ -319,7 +324,7 @@ const updateImages = asyncHandler(async (req, res) => {
   }
 
   for (let i = 0; i < req.files.images.length; i++) {
-    const image = await uploadOnCloudinary(req.files.images[i].path);
+    const image = await uploadOnLocalServer(req.files.images[i].path);
     if (!image) {
       throw new ApiError(
         500,

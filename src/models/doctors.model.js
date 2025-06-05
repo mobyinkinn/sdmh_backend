@@ -30,15 +30,17 @@ const doctorSchema = new Schema(
     availablity: {
       type: Map,
       of: String,
-      required: true,
+      required: false,
     },
     floor: {
       type: String,
       trim: true,
+      required: false,
     },
     room: {
       type: String,
       trim: true,
+      required: false,
     },
     about: {
       type: String,
