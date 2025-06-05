@@ -37,16 +37,24 @@ router.route("/create").post(
 );
 router.route("/get-all").get(getAllBanners);
 router.route("/get-by-page").get(getBannerByPage);
-router.route("/update/").post(
+router.route("/update").post(
   verifyJwt,
   upload.fields([
-    {
+   {
       name: "images",
       maxCount: 3,
     },
     {
       name: "mobileimages",
       maxCount: 3,
+    },
+    {
+      name: "banner",
+      maxCount: 1,
+    },
+    {
+      name: "mobileBanner",
+      maxCount: 1,
     },
   ]),
   updateBanner
