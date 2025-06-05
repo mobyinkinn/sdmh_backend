@@ -200,25 +200,25 @@ const createBanner = asyncHandler(async (req, res) => {
     ? req.files.mobileBanner[0]?.path
     : null;
 
-  if (!imageLocalPath) {
-    throw new ApiError(400, "Logo (banner image) is required");
-  }
-  if (!mobileimageLocalPath) {
-    throw new ApiError(400, "Mobile banner image is required");
-  }
+  // if (!imageLocalPath) {
+  //   throw new ApiError(400, "Logo (banner image) is required");
+  // }
+  // if (!mobileimageLocalPath) {
+  //   throw new ApiError(400, "Mobile banner image is required");
+  // }
 
   const banners = await uploadOnLocalServer(
     imageLocalPath,
     req.files?.banner[0]?.originalname
   );
-  if (!banners) throw new ApiError(500, "Failed to upload banner image");
+  // if (!banners) throw new ApiError(500, "Failed to upload banner image");
 
   const mobilebanners = await uploadOnLocalServer(
     mobileimageLocalPath,
     req.files?.mobileBanner[0]?.originalname
   );
-  if (!mobilebanners)
-    throw new ApiError(500, "Failed to upload mobile banner image");
+  // if (!mobilebanners)
+  //   throw new ApiError(500, "Failed to upload mobile banner image");
 
   // Initialize arrays to store image URLs
   const images = [];
@@ -262,12 +262,12 @@ const createBanner = asyncHandler(async (req, res) => {
     status,
   });
 
-  if (!banner) {
-    throw new ApiError(
-      500,
-      "Something went wrong while creating the banner!!!"
-    );
-  }
+  // if (!banner) {
+  //   throw new ApiError(
+  //     500,
+  //     "Something went wrong while creating the banner!!!"
+  //   );
+  // }
 
   res
     .status(200)
